@@ -1,0 +1,27 @@
+inc/Module/Install.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
+lib/Test/Mock/Net/FTP.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+t/001_use_ok.t
+t/002_basic.t
+t/003_cwd.t
+t/004_put.t
+t/005_get.t
+t/006_intercept_put.t
+t/007_intercept_get.t
+t/008_autoload.t
+t/009_ls.t
+t/010_dir.t
+t/996_pod_coverage.t
+t/997_pod.t
+t/998_perl_critic.t
+t/perlcriticrc
+t/testdata/data1.txt
