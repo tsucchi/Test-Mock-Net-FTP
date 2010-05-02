@@ -1,6 +1,8 @@
 ^Makefile$
 ^MANIFEST.SKIP$
-^t/999_dependencies.t$
+^MANIFEST.bak$
 .*~$
 .svn
+^.git/
+^.gitignore$
 ^TODO$

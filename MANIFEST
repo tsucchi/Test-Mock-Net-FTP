@@ -20,8 +20,10 @@ t/007_intercept_get.t
 t/008_autoload.t
 t/009_ls.t
 t/010_dir.t
-t/996_pod_coverage.t
-t/997_pod.t
-t/998_perl_critic.t
 t/perlcriticrc
 t/testdata/data1.txt
+xt/module_used.t
+xt/perlcritic.t
+xt/perlcriticrc
+xt/pod.t
+xt/pod_coverage.t
