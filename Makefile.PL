@@ -9,4 +9,11 @@ perl_version   '5.008';
 all_from       'lib/Test/Mock/Net/FTP.pm';
 test_requires  'Test::More'  => '0.88';   #want to use done_testing()
 
+author_tests    'xt';
+author_requires 'Test::Perl::Critic';
+author_requires 'Test::Synopsis';
+author_requires 'Test::Pod';
+author_requires 'Test::Pod::Coverage';
+author_requires 'Test::Module::Used' => '0.1.4';
+
 WriteAll;
