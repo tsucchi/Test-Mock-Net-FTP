@@ -15,7 +15,29 @@ Test::Mock::Net::FTP - Mock Object for Net::FTP
 
 =head1 SYNOPSIS
 
-write synopsis here
+  use strict;
+  use warnings;
+
+  use Test::More;
+  use Test::Mock::Net::FTP;
+
+  Test::Mock::Net::FTP::mock_prepare(
+      'somehost.example.com' => {
+          'user1'=> {
+              password => 'secret',
+              dir => ['./ftpserver', '/ftproot'],
+          },
+      }
+  );
+  my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
+  $ftp->login('user1', 'secret');
+  $ftp->cwd('datadir');
+  $ftp->get('file1');
+  $ftp->quit();
+  # or
+  use Test::Mock::Net::FTP qw(intercept);
+  some_method_using_ftp();
+
 
 =head1 DESCRIPTION
 
@@ -30,7 +52,7 @@ my %mock_server;
 
 =cut
 
-=head2 mock_prepare
+=head2 mock_prepare(%params)
 
 prepare FTP server in your local filesystem.
 
@@ -42,7 +64,7 @@ sub mock_prepare {
 }
 
 
-=head2 new
+=head2 new($host, %options)
 
 create new instance
 
@@ -62,7 +84,7 @@ sub new {
     bless $self, $class;
 }
 
-=head2 login
+=head2 login($user, $password)
 
 login mock FTP server
 
@@ -92,7 +114,7 @@ sub _mock_login_auth {
 }
 
 
-=head2 pwd
+=head2 pwd()
 
 return (mock) server current directory
 
@@ -104,7 +126,7 @@ sub pwd {
 }
 
 
-=head2 mock_pwd
+=head2 mock_pwd()
 
 mock's current directory
 
@@ -116,7 +138,7 @@ sub mock_pwd {
 }
 
 
-=head2 cwd
+=head2 cwd($dir)
 
 change (mock) server current directory
 
@@ -162,7 +184,7 @@ sub _mock_check_pwd {
     return 1;
 }
 
-=head2 put
+=head2 put($local_file, [$remote_file])
 
 put a file to mock FTP server
 
@@ -176,7 +198,7 @@ sub put {
           $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
 }
 
-=head2 get
+=head2 get($remote_file, [$local_file])
 
 get file from mock FTP server
 
@@ -191,7 +213,7 @@ sub get {
 }
 
 
-=head2 ls
+=head2 ls($dir)
 
 list file(s) in server directory.
 
@@ -206,7 +228,7 @@ sub ls {
 }
 
 
-=head2 dir
+=head2 dir($dir)
 
 list file(s) with detail information(ex. filesize) in server directory.
 
@@ -264,6 +286,17 @@ sub quit {
     my $self = shift;
 }
 
+=head2 close()
+
+close connection mock FTP server.(eventually do nothing)
+
+=cut
+
+sub close {
+    return 1;
+}
+
+
 sub _remote_dir_for_dir {
     my $self = shift;
     my($dir) = @_;
@@ -298,7 +331,7 @@ sub _abs_local_file {
     return catfile($local_dir, basename($local_file));
 }
 
-=head2 message
+=head2 message()
 
 return messages from mock FTP server
 
@@ -314,15 +347,6 @@ sub _mock_cwd {
     return (defined $self->{mock_cwd}) ? $self->{mock_cwd} : "";
 }
 
-=head2 close
-
-close connection mock FTP server.(eventually do nothing)
-
-=cut
-
-sub close {
-    return 1;
-}
 
 sub import {
     my ($package, @args) = @_;
@@ -353,17 +377,20 @@ sub DESTROY {}
 
 =head1 AUTHOR
 
-Takuya Tsuchida E<lt>takuya.tsuchida@gmail.comE<gt>
+Takuya Tsuchida E<lt>tsucchi at cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-Net::FTP
+L<Net::FTP>
 
 =head1 REPOSITORY
 
-plan to put sources on github or coderepos
+L<http://github.com/tsucchi/Test-Mock-Net-FTP>
 
-=head1 LICENSE
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2009-2011 Takuya Tsuchida
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
