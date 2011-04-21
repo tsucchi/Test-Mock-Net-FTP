@@ -21,9 +21,9 @@ Test::Mock::Net::FTP::mock_prepare(
 my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
 $ftp->login('user1', 'secret');
 eval {
-    $ftp->rename('aaa', 'bbb');
+    $ftp->append('aaa', 'bbb');
 };
-like( $@, qr/^Not Impremented method rename called\./);
+like( $@, qr/^Not Impremented method append called\./);
 $ftp->close;
 
 done_testing();

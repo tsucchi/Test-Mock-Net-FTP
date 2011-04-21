@@ -76,10 +76,11 @@ sub new {
     return if ( !exists $mock_server{$host} );
 
     my $self = {
-        mock_host          => $host,
-        mock_phisical_root => '',
-        mock_server_root   => '',
-        mock_transfer_mode => 'ascii',
+        mock_host            => $host,
+        mock_phisical_root   => '',
+        mock_server_root     => '',
+        mock_transfer_mode   => 'ascii',
+        mock_connection_mode => 'pasv',
     };
     bless $self, $class;
 }
@@ -242,6 +243,53 @@ sub dir {
     shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
     return @dir;
 }
+
+=head2 rename($oldname, $newname)
+
+rename remote file
+
+=cut
+
+sub rename {
+    my $self = shift;
+    my ($oldname, $newname) = @_;
+    rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname)
+}
+
+
+=head2 port($port_no)
+
+specify data connection to port-mode
+
+=cut
+
+sub port {
+    my $self = shift;
+    $self->{mock_connection_mode} = 'port';
+}
+
+=head2 pasv()
+
+specify data connection to passive-mode
+
+=cut
+
+sub pasv {
+    my $self = shift;
+    $self->{mock_connection_mode} = 'pasv';
+}
+
+=head2 mock_connection_mode()
+
+return current connection mode (port or pasv)
+
+=cut
+
+sub mock_connection_mode {
+    my $self = shift;
+    return $self->{mock_connection_mode};
+}
+
 
 =head2 binary()
 
