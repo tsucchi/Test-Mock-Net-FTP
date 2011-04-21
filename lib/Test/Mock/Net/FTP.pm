@@ -54,9 +54,10 @@ sub new {
     return if ( !exists $mock_server{$host} );
 
     my $self = {
-        mock_host   => $host,
-        mock_phisical_root => "",
-        mock_server_root   => "",
+        mock_host          => $host,
+        mock_phisical_root => '',
+        mock_server_root   => '',
+        mock_transfer_mode => 'ascii',
     };
     bless $self, $class;
 }
@@ -218,6 +219,49 @@ sub dir {
     my @dir = split(/\n/, `ls -l $target_dir`);
     shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
     return @dir;
+}
+
+=head2 binary()
+
+enter binary mode
+
+=cut
+
+sub binary {
+    my $self = shift;
+    $self->{mock_transfer_mode} = 'binary';
+}
+
+=head2 ascii()
+
+enter ascii mode
+
+=cut
+
+sub ascii {
+    my $self = shift;
+    $self->{mock_transfer_mode} = 'ascii';
+}
+
+=head2 mock_transfer_mode()
+
+return current transfer mode(ascii or binary)
+
+=cut
+
+sub mock_transfer_mode {
+    my $self = shift;
+    return $self->{mock_transfer_mode};
+}
+
+=head2 quit()
+
+quit. currently do nothing
+
+=cut
+
+sub quit {
+    my $self = shift;
 }
 
 sub _remote_dir_for_dir {
