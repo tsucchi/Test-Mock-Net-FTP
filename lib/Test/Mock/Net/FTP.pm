@@ -448,6 +448,30 @@ sub site {
     return 1;
 }
 
+=head2 size($file)
+
+returns filesize in remote (mock) server. but currently always return 1
+
+=cut
+
+sub size {
+    my $self = shift;
+    my ($filename) = @_;
+    return 1;
+}
+
+=head2 mdtm($file)
+
+returns file modification time in remote (mock) server. but currently always return 1
+
+=cut
+
+sub mdtm {
+    my $self = shift;
+    my ($filename) = @_;
+    return 1;
+}
+
 
 sub _remote_dir_for_dir {
     my $self = shift;
