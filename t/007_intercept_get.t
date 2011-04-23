@@ -7,44 +7,23 @@ use File::Path qw(remove_tree make_path);
 use File::Copy;
 use File::Spec::Functions qw(catfile catdir);
 use Cwd qw(chdir getcwd);
-
+use t::Util;
 use Test::Mock::Net::FTP qw(intercept);
 use Net::FTP;
+use File::chdir;
 
+copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) );
 
-remove_tree 'tmp' if ( -e 'tmp' );
-remove_tree 'ftpserver' if ( -e 'ftpserver' );
+subtest 'intercept get', sub {
+    my $ftp = Net::FTP->new('somehost.example.com'); #replaced by Test::Mock::Net::FTP
+    $ftp->login('user1', 'secret');
 
-make_path( catdir('ftpserver', 'dir1'), 'tmp' );
-copy( catfile('t', 'testdata', 'data1.txt'), catfile('ftpserver', 'dir1', 'data1.txt' ) );
+    local $CWD = 'tmp';
 
-Test::Mock::Net::FTP::mock_prepare(
-    'somehost.example.com' => {
-        'user1'=> {
-            password => 'secret',
-            dir => ['ftpserver', '/ftproot'],
-        },
-    },
-);
-
-my $ftp = Net::FTP->new('somehost.example.com'); #replaced by Test::Mock::Net::FTP
-$ftp->login('user1', 'secret');
-my $cwd = getcwd();
-chdir( 'tmp' );
-
-$ftp->cwd('dir1');
-$ftp->get( 'data1.txt' );
-ok( -e 'data1.txt' );
-open(my $IN, '<', 'data1.txt' ) or die $@;
-my $contents = do { local $/; <$IN>};
-close($IN);
-is( $contents, "this is testdata #1\n");
-
-
-chdir($cwd);
-remove_tree('tmp');
-remove_tree('ftpserver');
-$ftp->close if defined ($ftp);
-
+    $ftp->cwd('dir1');
+    $ftp->get( 'data1.txt' );
+    file_contents_ok('data1.txt', "this is testdata #1\n");
+    done_testing();
+};
 
 done_testing();
