@@ -8,6 +8,7 @@ use File::Basename;
 use Cwd qw(getcwd);
 use Carp;
 
+our $VERSION = '0.01';
 
 =head1 NAME
 
