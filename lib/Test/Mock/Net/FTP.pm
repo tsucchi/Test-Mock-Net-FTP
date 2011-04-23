@@ -174,11 +174,27 @@ sub cwd {
     return $self->_mock_check_pwd($backup_cwd);
 }
 
+=head2 cdup()
+
+change (mock) server directory to parent
+
+=cut
+
+sub cdup {
+    my $self = shift;
+
+    my $backup_cwd = $self->_mock_cwd;
+    $self->{mock_cwd} = dirname($self->_mock_cwd);# to updir
+    return $self->_mock_check_pwd($backup_cwd);
+}
+
+
 sub _mock_cwd_each {
     my $self = shift;
     my ( $dir ) = @_;
     if ( $dir eq '..' ) {
-        $self->{mock_cwd} = dirname($self->_mock_cwd);# to updir
+        #$self->{mock_cwd} = dirname($self->_mock_cwd);# to updir
+        $self->cdup();
     }
     else {
         $self->{mock_cwd} = catdir($self->_mock_cwd, $dir);

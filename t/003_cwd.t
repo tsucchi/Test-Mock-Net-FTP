@@ -56,6 +56,19 @@ subtest 'chdir to updir', sub {
     done_testing();
 };
 
+subtest 'chdir to updir using cdup', sub {
+    my $ftp = prepare_ftp();
+
+    $ftp->cwd('dir1/dir2');
+
+    ok( $ftp->cdup() );
+    is( $ftp->pwd, '/ftproot/dir1' );
+    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1' );
+
+    $ftp->quit();
+    done_testing();
+};
+
 subtest 'chdir to up another dir', sub {
     my $ftp = prepare_ftp();
 
