@@ -3,9 +3,8 @@
 use strict;
 use warnings;
 
-use File::Path qw(remove_tree make_path);
 use File::Copy;
-use File::Spec::Functions qw(catfile catdir);
+use File::Spec::Functions qw(catfile);
 
 use Test::More;
 use t::Util;
