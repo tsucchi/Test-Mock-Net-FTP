@@ -253,7 +253,19 @@ rename remote file
 sub rename {
     my $self = shift;
     my ($oldname, $newname) = @_;
-    rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname)
+    rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname);
+}
+
+=head2 delete($filename)
+
+delete remote file
+
+=cut
+
+sub delete {
+    my $self = shift;
+    my ($filename) = @_;
+    unlink $self->_abs_remote_file($filename);
 }
 
 
@@ -345,11 +357,24 @@ sub close {
     return 1;
 }
 
+=head2 abort()
+
+abort. currently do nothing
+
+=cut
+
+sub abort {
+    my $self = shift;
+    return 1;
+}
+
+
 =head2 site(@args)
 
 execute SITE command (currently do nothing)
 
 =cut
+
 sub site {
     my $self = shift;
     return 1;
