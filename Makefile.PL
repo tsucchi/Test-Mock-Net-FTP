@@ -8,6 +8,7 @@ perl_version    '5.008';
 all_from        'lib/Test/Mock/Net/FTP.pm';
 test_requires   'Test::More'  => '0.88';   #want to use done_testing()
 test_requires   'parent';
+test_requires   'File::chdir';
 author_tests    'xt';
 author_requires 'Test::Perl::Critic';
 author_requires 'Test::Synopsis';
