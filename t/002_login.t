@@ -25,15 +25,15 @@ ok( !defined Test::Mock::Net::FTP->new('invalidhost.example.com') );
 
 my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
 ok( defined $ftp);
-ok( defined $ftp->login('user1', 'secret') );
-ok( !defined $ftp->login('invalid', 'invalid') );
+ok( $ftp->login('user1', 'secret') );
+ok( !$ftp->login('invalid', 'invalid') );
 is( $ftp->message, 'Login incorrect.');
 ok( $ftp->close );
 
 
 $ftp = Test::Mock::Net::FTP->new('host2.example.com');
 ok( defined $ftp);
-ok( defined $ftp->login('userX', 'secretX') );
+ok( $ftp->login('userX', 'secretX') );
 ok( $ftp->close );
 
 
