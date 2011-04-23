@@ -20,6 +20,11 @@ subtest 'specify directory', sub {
     my @dir_result = $ftp->dir('dir2');
     is( scalar(@dir_result), 2 );
     like( $dir_result[0], qr/data1\.txt$/ );
+
+    my $dir_result_aref = $ftp->dir('dir2'); #scalar context
+    is( ref $dir_result_aref, 'ARRAY' );
+    is( scalar(@{ $dir_result_aref }), 2 );
+    like( $dir_result_aref->[0], qr/data1\.txt$/);
     done_testing();
 };
 

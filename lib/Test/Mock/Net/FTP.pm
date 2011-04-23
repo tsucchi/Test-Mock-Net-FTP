@@ -250,10 +250,13 @@ list file(s) in server directory.
 
 sub ls {
     my $self = shift;
-    my($dir) = @_;
+    my ($dir) = @_;
     my $target_dir = $self->_remote_dir_for_dir($dir);
     my @ls = split(/\n/, `ls $target_dir`);
-    return (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
+    my @result =  (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
+
+    return @result if ( wantarray() );
+    return \@result;
 }
 
 
@@ -265,11 +268,13 @@ list file(s) with detail information(ex. filesize) in server directory.
 
 sub dir {
     my $self = shift;
-    my($dir) = @_;
+    my ($dir) = @_;
     my $target_dir = $self->_remote_dir_for_dir($dir);
     my @dir = split(/\n/, `ls -l $target_dir`);
     shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
-    return @dir;
+
+    return @dir if ( wantarray() );
+    return \@dir;
 }
 
 =head2 rename($oldname, $newname)

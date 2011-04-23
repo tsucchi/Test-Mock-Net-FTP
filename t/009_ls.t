@@ -20,6 +20,10 @@ subtest 'ls to dir', sub {
     is( scalar(@ls_result), 2 );
     is( $ls_result[0], 'dir2/data1.txt' );
 
+    my $ls_result_aref = $ftp->ls('dir2'); #scalar context
+    is( ref $ls_result_aref, 'ARRAY' );
+    is( scalar(@{ $ls_result_aref }), 2);
+    is( $ls_result_aref->[0], 'dir2/data1.txt');
     done_testing();
 };
 
