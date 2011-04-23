@@ -7,43 +7,44 @@ use File::Path qw(remove_tree make_path);
 use File::Copy;
 use File::Spec::Functions qw(catfile catdir);
 
-use Test::Mock::Net::FTP;
 use Test::More;
-
+use t::Util;
 use Test::Mock::Net::FTP;
 
-remove_tree 'ftpserver' if ( -e 'ftpserver' );
+copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir2', 'data1.txt' ) );
+copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir2', 'data2.txt' ) );
 
-make_path( catdir('ftpserver', 'dir1') );
-copy( catfile('t', 'testdata', 'data1.txt'), catfile('ftpserver', 'dir1', 'data1.txt' ) );
-copy( catfile('t', 'testdata', 'data1.txt'), catfile('ftpserver', 'dir1', 'data2.txt' ) );
+subtest 'ls to dir', sub {
+    my $ftp = prepare_ftp();
 
-Test::Mock::Net::FTP::mock_prepare(
-    'somehost.example.com' => {
-        'user1'=> {
-            password => 'secret',
-            dir => ['ftpserver', '/ftproot'],
-        },
-    }
-);
-my @ls_result;
-my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
-$ftp->login('user1', 'secret');
+    my @ls_result = $ftp->ls('dir2');
+    is( scalar(@ls_result), 2 );
+    is( $ls_result[0], 'dir2/data1.txt' );
 
-@ls_result = $ftp->ls('dir1');
-is( scalar(@ls_result), 2 );
-is( $ls_result[0], 'dir1/data1.txt' );
+    done_testing();
+};
 
-$ftp->cwd('dir1');
-@ls_result = $ftp->ls();
-is( scalar(@ls_result), 2 );
-is( $ls_result[0], 'data1.txt' );
+subtest 'ls to current dir', sub {
+    my $ftp = prepare_ftp();
 
-$ftp->cwd();
-@ls_result = $ftp->ls('/ftproot/dir1'); #absolute path
-is( scalar(@ls_result), 2 );
-is( $ls_result[0], '/ftproot/dir1/data1.txt' );
+    $ftp->cwd('dir2');
+    my @ls_result = $ftp->ls();
+    is( scalar(@ls_result), 2 );
+    is( $ls_result[0], 'data1.txt' );
 
-remove_tree 'ftpserver' if ( -e 'ftpserver' );
+    done_testing();
+};
+
+subtest 'specify absolute path', sub {
+    my $ftp = prepare_ftp();
+
+    $ftp->cwd();
+    my @ls_result = $ftp->ls('/ftproot/dir2'); #absolute path
+    is( scalar(@ls_result), 2 );
+    is( $ls_result[0], '/ftproot/dir2/data1.txt' );
+
+    done_testing();
+};
+
 
 done_testing();
