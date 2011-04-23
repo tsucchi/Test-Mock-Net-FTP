@@ -7,6 +7,7 @@ use File::Spec::Functions qw( catdir splitdir rootdir catfile curdir rel2abs abs
 use File::Basename;
 use Cwd qw(getcwd);
 use Carp;
+use File::Path qw(make_path remove_tree);
 
 our $VERSION = '0.01';
 
@@ -193,7 +194,6 @@ sub _mock_cwd_each {
     my $self = shift;
     my ( $dir ) = @_;
     if ( $dir eq '..' ) {
-        #$self->{mock_cwd} = dirname($self->_mock_cwd);# to updir
         $self->cdup();
     }
     else {
@@ -294,6 +294,41 @@ sub delete {
     my $self = shift;
     my ($filename) = @_;
     unlink $self->_abs_remote_file($filename);
+}
+
+
+=head2 mkdir($dirname, $recursive_bool)
+
+mkdir to remove (mock) server. when $recursive_bool is true, dir is recursively create.
+
+=cut
+
+sub mkdir {
+    my $self = shift;
+    my ($dirname, $recursive_bool) = @_;
+    if ( !!$recursive_bool ) {
+        make_path( $self->_abs_remote_file($dirname) );
+    }
+    else {
+        mkdir $self->_abs_remote_file($dirname);
+    }
+}
+
+=head2 rmdir($dirname, $recursive_bool)
+
+rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively removed.
+
+=cut
+
+sub rmdir {
+    my $self = shift;
+    my ($dirname, $recursive_bool) = @_;
+    if ( !!$recursive_bool ) {
+        remove_tree( $self->_abs_remote_file($dirname) );
+    }
+    else {
+        rmdir $self->_abs_remote_file($dirname);
+    }
 }
 
 

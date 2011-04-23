@@ -25,6 +25,7 @@ t/010_dir.t
 t/011_misc_methods.t
 t/012_rename.t
 t/013_delete.t
+t/014_mkdir_and_rmdir.t
 t/perlcriticrc
 t/testdata/data1.txt
 t/Util.pm
