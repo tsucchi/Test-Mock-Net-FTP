@@ -1,14 +1,13 @@
 use inc::Module::Install;
 
-name           'Test-Mock-Net-FTP';
-author         'Takuya Tsuchida <takuya.tsuchida@gmail.com>';
-version        '0.0.1';
-license        'perl';
+name            'Test-Mock-Net-FTP';
+author          'Takuya Tsuchida <tsucchi at cpan.org>';
+license         'perl';
 
-perl_version   '5.008';
-all_from       'lib/Test/Mock/Net/FTP.pm';
-test_requires  'Test::More'  => '0.88';   #want to use done_testing()
-
+perl_version    '5.008';
+all_from        'lib/Test/Mock/Net/FTP.pm';
+test_requires   'Test::More'  => '0.88';   #want to use done_testing()
+test_requires   'parent';
 author_tests    'xt';
 author_requires 'Test::Perl::Critic';
 author_requires 'Test::Synopsis';

@@ -78,7 +78,7 @@ sub new {
 
     my $self = {
         mock_host            => $host,
-        mock_phisical_root   => '',
+        mock_physical_root   => '',
         mock_server_root     => '',
         mock_transfer_mode   => 'ascii',
         mock_connection_mode => 'pasv',
@@ -98,7 +98,7 @@ sub login {
     if ( $self->_mock_login_auth( $user, $pass) ) {# auth success
         $self->{mock_cwd} = rootdir();
         my $mock_server_for_user = $mock_server{$self->{mock_host}}->{$user};
-        $self->{mock_phisical_root}   = rel2abs($mock_server_for_user->{dir}->[0]) if defined $mock_server_for_user->{dir}->[0];
+        $self->{mock_physical_root}   = rel2abs($mock_server_for_user->{dir}->[0]) if defined $mock_server_for_user->{dir}->[0];
         $self->{mock_server_root} = $mock_server_for_user->{dir}->[1] if defined $mock_server_for_user->{dir}->[1];
         return 1;
     }
@@ -136,7 +136,18 @@ mock's current directory
 
 sub mock_pwd {
     my $self = shift;
-    return catdir(abs2rel($self->{mock_phisical_root}), $self->_mock_cwd);
+    return catdir($self->mock_physical_root, $self->_mock_cwd);
+}
+
+=head2 mock_physical_root()
+
+mock's physical root directory
+
+=cut
+
+sub mock_physical_root {
+    my $self = shift;
+    return abs2rel($self->{mock_physical_root});
 }
 
 
@@ -403,7 +414,7 @@ sub _abs_remote_file {
     my( $remote_file ) = @_;
     my $remote_dir = $self->_remote_dir_for_file($remote_file);
     $remote_dir = "" if !defined $remote_dir;
-    return catfile($self->{mock_phisical_root}, $remote_dir, basename($remote_file))
+    return catfile($self->{mock_physical_root}, $remote_dir, basename($remote_file))
 }
 
 sub _abs_local_file {
