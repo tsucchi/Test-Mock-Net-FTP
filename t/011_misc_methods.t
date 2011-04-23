@@ -3,20 +3,11 @@ use strict;
 use warnings;
 
 use Test::More;
+use t::Util;
 use Test::Mock::Net::FTP;
 
-Test::Mock::Net::FTP::mock_prepare(
-    'somehost.example.com' => {
-        'user1'=> {
-            password => 'secret',
-            dir => ['ftpserver', '/ftproot'],
-        },
-    }
-);
-
 subtest 'transfer mode', sub {
-    my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
-    $ftp->login('user1', 'secret');
+    my $ftp = prepare_ftp();
     is( $ftp->mock_transfer_mode(), 'ascii');#default transfer mode is ascii
 
     $ftp->binary();
@@ -30,8 +21,7 @@ subtest 'transfer mode', sub {
 };
 
 subtest 'connection mode', sub {
-    my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
-    $ftp->login('user1', 'secret');
+    my $ftp = prepare_ftp();
     is( $ftp->mock_connection_mode(), 'pasv');
 
     $ftp->port(1234);
@@ -45,8 +35,7 @@ subtest 'connection mode', sub {
 };
 
 subtest 'site', sub {
-    my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
-    $ftp->login('user1', 'secret');
+    my $ftp = prepare_ftp();
     $ftp->site("help");
     ok(1); #dummy
     done_testing();
