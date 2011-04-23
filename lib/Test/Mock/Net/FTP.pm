@@ -332,6 +332,7 @@ quit. currently do nothing
 
 sub quit {
     my $self = shift;
+    return 1;
 }
 
 =head2 close()
@@ -341,6 +342,16 @@ close connection mock FTP server.(eventually do nothing)
 =cut
 
 sub close {
+    return 1;
+}
+
+=head2 site(@args)
+
+execute SITE command (currently do nothing)
+
+=cut
+sub site {
+    my $self = shift;
     return 1;
 }
 

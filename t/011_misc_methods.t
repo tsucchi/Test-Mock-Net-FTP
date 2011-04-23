@@ -43,5 +43,14 @@ subtest 'connection mode', sub {
     $ftp->quit();
     done_testing();
 };
+
+subtest 'site', sub {
+    my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
+    $ftp->login('user1', 'secret');
+    $ftp->site("help");
+    ok(1); #dummy
+    done_testing();
+};
+
 done_testing();
 
