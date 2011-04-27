@@ -49,7 +49,6 @@ Test::Mock::Net::FTP is Mock Object for Net::FTP. This module behave like FTP se
 
 my %mock_server;
 
-
 =head1 METHODS
 
 =cut
@@ -162,7 +161,6 @@ change (mock) server current directory
 sub cwd {
     my $self = shift;
     my ($dirs) = @_;
-
     if ( !defined $dirs ) {
         $self->{mock_cwd} = rootdir();
         $dirs = "";

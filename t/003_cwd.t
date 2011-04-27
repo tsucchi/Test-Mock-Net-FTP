@@ -33,11 +33,11 @@ subtest 'chdir to dir1', sub {
 
 subtest 'chdir to dir1 And local dir changed', sub {
     my $ftp = prepare_ftp();
-
+    local $CWD = 'tmp';
     ok( $ftp->cwd('dir1') );
     is( $ftp->pwd, '/ftproot/dir1' );
-    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1' );
-    is( abs2rel($ftp->mock_physical_root), 'tmp/ftpserver' );#physical root is unchange
+    is( abs2rel($ftp->mock_pwd), 'ftpserver/dir1' );
+    is( abs2rel($ftp->mock_physical_root), 'ftpserver' );
 
     $ftp->quit();
     done_testing();
