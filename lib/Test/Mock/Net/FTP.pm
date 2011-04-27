@@ -97,10 +97,11 @@ sub login {
     my $self = shift;
     my ( $user, $pass ) = @_;
     if ( $self->_mock_login_auth( $user, $pass) ) {# auth success
-        $self->{mock_cwd} = rootdir();
         my $mock_server_for_user = $mock_server{$self->{mock_host}}->{$user};
-        $self->{mock_physical_root}   = rel2abs($mock_server_for_user->{dir}->[0]) if defined $mock_server_for_user->{dir}->[0];
-        $self->{mock_server_root} = $mock_server_for_user->{dir}->[1] if defined $mock_server_for_user->{dir}->[1];
+        my $dir = $mock_server_for_user->{dir};
+        $self->{mock_physical_root} = rel2abs($dir->[0]) if defined $dir->[0];
+        $self->{mock_server_root}   = $dir->[1];
+        $self->{mock_cwd}           = rootdir();
         return 1;
     }
     $self->{message} = 'Login incorrect.';
@@ -148,7 +149,7 @@ mock's physical root directory
 
 sub mock_physical_root {
     my $self = shift;
-    return abs2rel($self->{mock_physical_root});
+    return $self->{mock_physical_root};
 }
 
 

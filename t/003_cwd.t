@@ -4,14 +4,15 @@ use Test::Mock::Net::FTP;
 use t::Util;
 use strict;
 use warnings;
+use File::Spec::Functions qw(abs2rel);
 
 subtest 'default directory', sub {
     my $ftp = prepare_ftp();
 
     is( $ftp->pwd, '/ftproot' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver' );
     ok( -d $ftp->mock_pwd);
-    is( $ftp->mock_physical_root, 'tmp/ftpserver' );
+    is( abs2rel($ftp->mock_physical_root), 'tmp/ftpserver' );
 
     $ftp->quit;
     done_testing();
@@ -22,8 +23,8 @@ subtest 'chdir to dir1', sub {
 
     ok( $ftp->cwd('dir1') );
     is( $ftp->pwd, '/ftproot/dir1' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1' );
-    is( $ftp->mock_physical_root, 'tmp/ftpserver' );#physical root is unchange
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1' );
+    is( abs2rel($ftp->mock_physical_root), 'tmp/ftpserver' );#physical root is unchange
 
     $ftp->quit();
     done_testing();
@@ -35,7 +36,7 @@ subtest 'back to rootdir', sub {
     $ftp->cwd('dir1');
     ok( $ftp->cwd() );
     is( $ftp->pwd, '/ftproot' ); #back to rootdir
-    is( $ftp->mock_pwd, 'tmp/ftpserver');
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver');
 
     $ftp->quit();
     done_testing();
@@ -46,11 +47,11 @@ subtest 'chdir to updir', sub {
 
     ok( $ftp->cwd('dir1/dir2') );
     is( $ftp->pwd, '/ftproot/dir1/dir2' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1/dir2' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir2' );
 
     $ftp->cwd('../../');
     is( $ftp->pwd, '/ftproot' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver' );
 
     $ftp->quit();
     done_testing();
@@ -63,7 +64,7 @@ subtest 'chdir to updir using cdup', sub {
 
     ok( $ftp->cdup() );
     is( $ftp->pwd, '/ftproot/dir1' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1' );
 
     $ftp->quit();
     done_testing();
@@ -74,10 +75,10 @@ subtest 'chdir to up another dir', sub {
 
     ok( $ftp->cwd('dir1/dir2') );
     is( $ftp->pwd, '/ftproot/dir1/dir2' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1/dir2' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir2' );
     $ftp->cwd('../dir3');
     is( $ftp->pwd, '/ftproot/dir1/dir3' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1/dir3' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir3' );
 
     $ftp->quit();
     done_testing();
@@ -88,7 +89,7 @@ subtest 'using absolute path', sub {
 
     ok( $ftp->cwd('/ftproot/dir1/dir2') );
     is( $ftp->pwd, '/ftproot/dir1/dir2' );
-    is( $ftp->mock_pwd, 'tmp/ftpserver/dir1/dir2' );
+    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir2' );
 
     $ftp->quit();
     done_testing();
