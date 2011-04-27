@@ -8,6 +8,7 @@ use File::Basename;
 use Cwd qw(getcwd);
 use Carp;
 use File::Path qw(make_path remove_tree);
+use File::chdir;
 
 our $VERSION = '0.01';
 
@@ -48,6 +49,7 @@ Test::Mock::Net::FTP is Mock Object for Net::FTP. This module behave like FTP se
 =cut
 
 my %mock_server;
+my $cwd_when_prepared;
 
 =head1 METHODS
 
@@ -62,6 +64,7 @@ prepare FTP server in your local filesystem.
 sub mock_prepare {
     my %args = @_;
     %mock_server = %args;
+    $cwd_when_prepared = getcwd();
 }
 
 
@@ -96,6 +99,7 @@ sub login {
     my $self = shift;
     my ( $user, $pass ) = @_;
     if ( $self->_mock_login_auth( $user, $pass) ) {# auth success
+        local $CWD = $cwd_when_prepared;# chdir for absolute path
         my $mock_server_for_user = $mock_server{$self->{mock_host}}->{$user};
         my $dir = $mock_server_for_user->{dir};
         $self->{mock_physical_root} = rel2abs($dir->[0]) if defined $dir->[0];

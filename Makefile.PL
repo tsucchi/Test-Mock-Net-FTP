@@ -9,6 +9,8 @@ all_from        'lib/Test/Mock/Net/FTP.pm';
 test_requires   'Test::More'  => '0.94';   #want to use done_testing() and subtest
 test_requires   'parent';
 test_requires   'File::chdir';
+requires        'File::chdir';
+
 author_tests    'xt';
 author_requires 'Test::Perl::Critic';
 author_requires 'Test::Synopsis';
