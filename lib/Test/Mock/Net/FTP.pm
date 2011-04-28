@@ -78,11 +78,7 @@ sub new {
     my ( $host, %opts ) = @_;
     return if ( !exists $mock_server{$host} );
 
-    my $connection_mode = ((!defined $opts{Passive} && !defined $opts{Port} ) || !!$opts{Passive}) ? 'pasv' : 'port';
-    my $port_no = $connection_mode eq 'pasv' ? ''
-                                             : defined $opts{Port} ? $opts{Port}
-                                                                   : '20';
-
+    my ($connection_mode, $port_no) = _connection_mode_and_port_no(%opts);
 
     my $self = {
         mock_host            => $host,
@@ -93,6 +89,15 @@ sub new {
         mock_port_no         => $port_no,
     };
     bless $self, $class;
+}
+
+sub _connection_mode_and_port_no {
+    my (%opts) = @_;
+    my $connection_mode = ((!defined $opts{Passive} && !defined $opts{Port} ) || !!$opts{Passive}) ? 'pasv' : 'port';
+    my $port_no = $connection_mode eq 'pasv' ? ''
+                                             : defined $opts{Port} ? $opts{Port}
+                                                                   : '20';
+    return ($connection_mode, $port_no);
 }
 
 =head2 login($user, $password)
