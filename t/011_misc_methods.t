@@ -33,6 +33,11 @@ subtest 'connection mode', sub {
     is( $ftp->mock_connection_mode(), 'pasv');
 
     $ftp->quit();
+
+    # specify port mode
+    $ftp = prepare_ftp(Passive=>0);
+    is( $ftp->mock_connection_mode(), 'port');
+
     done_testing();
 };
 

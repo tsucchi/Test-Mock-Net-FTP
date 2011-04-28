@@ -77,13 +77,14 @@ sub new {
     my $class = shift;
     my ( $host, %opts ) = @_;
     return if ( !exists $mock_server{$host} );
+    my $connection_mode = !defined $opts{Passive} || !!$opts{Passive} ? 'pasv' : 'port';
 
     my $self = {
         mock_host            => $host,
         mock_physical_root   => '',
         mock_server_root     => '',
         mock_transfer_mode   => 'ascii',
-        mock_connection_mode => 'pasv',
+        mock_connection_mode => $connection_mode,
     };
     bless $self, $class;
 }

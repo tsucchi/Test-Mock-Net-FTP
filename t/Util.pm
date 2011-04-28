@@ -31,7 +31,8 @@ END {
 }
 
 sub prepare_ftp {
-    my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
+    my (%option) = @_;
+    my $ftp = Test::Mock::Net::FTP->new('somehost.example.com', %option);
     $ftp->login('user1', 'secret');
     return $ftp;
 }
