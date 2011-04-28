@@ -10,7 +10,7 @@ use Cwd qw(chdir getcwd);
 use t::Util;
 use Test::Mock::Net::FTP qw(intercept);
 use Net::FTP;
-use File::chdir;
+use Cwd;
 
 copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) );
 
@@ -18,11 +18,14 @@ subtest 'intercept get', sub {
     my $ftp = Net::FTP->new('somehost.example.com'); #replaced by Test::Mock::Net::FTP
     $ftp->login('user1', 'secret');
 
-    local $CWD = 'tmp';
+    my $cwd = getcwd();
+    chdir 'tmp';
 
     $ftp->cwd('dir1');
     $ftp->get( 'data1.txt' );
     file_contents_ok('data1.txt', "this is testdata #1\n");
+
+    chdir $cwd;
     done_testing();
 };
 

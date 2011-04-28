@@ -6,7 +6,6 @@ use File::Spec::Functions qw(catfile catdir rootdir);
 use t::Util;
 use Test::Mock::Net::FTP;
 use Cwd;
-use File::chdir;
 
 my $data = catfile('t', 'testdata', 'data1.txt');
 
@@ -25,11 +24,13 @@ subtest 'default put and chdir', sub {
     my $cwd = getcwd();
 
     my $data_abs = catfile($cwd, $data);
-    local $CWD = 'tmp';
+    chdir 'tmp';
     $ftp->cwd('dir1');
     $ftp->put($data_abs);
 
     file_contents_ok(catfile($ftp->mock_physical_root, 'dir1', 'data1.txt'), "this is testdata #1\n");
+
+    chdir $cwd;
     done_testing();
 };
 

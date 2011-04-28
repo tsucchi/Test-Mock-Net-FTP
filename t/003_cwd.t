@@ -5,7 +5,7 @@ use t::Util;
 use strict;
 use warnings;
 use File::Spec::Functions qw(abs2rel);
-use File::chdir;
+use Cwd;
 
 subtest 'default directory', sub {
     my $ftp = prepare_ftp();
@@ -33,12 +33,15 @@ subtest 'chdir to dir1', sub {
 
 subtest 'chdir to dir1 And local dir changed', sub {
     my $ftp = prepare_ftp();
-    local $CWD = 'tmp';
+
+    my $cwd = getcwd();
+    chdir 'tmp';
     ok( $ftp->cwd('dir1') );
     is( $ftp->pwd, '/ftproot/dir1' );
     is( abs2rel($ftp->mock_pwd), 'ftpserver/dir1' );
     is( abs2rel($ftp->mock_physical_root), 'ftpserver' );
 
+    chdir $cwd;
     $ftp->quit();
     done_testing();
 };
