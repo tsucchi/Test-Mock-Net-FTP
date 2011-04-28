@@ -48,6 +48,20 @@ subtest 'site', sub {
     done_testing();
 };
 
+subtest 'hash', sub {
+    my $ftp = prepare_ftp();
+    $ftp->hash();
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'alloc', sub {
+    my $ftp = prepare_ftp();
+    $ftp->alloc(1024);
+    ok(1); #dummy
+    done_testing();
+};
+
 subtest 'size', sub {
     my $ftp = prepare_ftp();
     copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) );

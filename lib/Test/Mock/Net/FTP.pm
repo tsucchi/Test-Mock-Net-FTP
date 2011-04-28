@@ -477,6 +477,28 @@ sub mdtm {
     return 1;
 }
 
+=head2 hash([$filehandle_glob_ref], [$bytes_per_hash_mark])
+
+hash currently do_nothing.
+
+=cut
+
+sub hash {
+    my $self = shift;
+    return 1;
+}
+
+=head2 alloc($size, [$record_size])
+
+alloc. currently do_nothing.
+
+=cut
+
+sub alloc {
+    my $self = shift;
+    return 1;
+}
+
 
 sub _remote_dir_for_dir {
     my $self = shift;
