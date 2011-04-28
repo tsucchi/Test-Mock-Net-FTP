@@ -18,25 +18,31 @@ subtest 'transfer mode', sub {
     $ftp->ascii();
     is( $ftp->mock_transfer_mode(), 'ascii');
 
-    $ftp->quit();
     done_testing();
 };
 
 subtest 'connection mode', sub {
     my $ftp = prepare_ftp();
     is( $ftp->mock_connection_mode(), 'pasv');
+    is( $ftp->mock_port_no(),         '');
 
     $ftp->port(1234);
     is( $ftp->mock_connection_mode(), 'port');
+    is( $ftp->mock_port_no(),         '1234');
 
     $ftp->pasv();
     is( $ftp->mock_connection_mode(), 'pasv');
+    is( $ftp->mock_port_no(),         '');
 
-    $ftp->quit();
-
-    # specify port mode
+    # specify port mode(and default port no)
     $ftp = prepare_ftp(Passive=>0);
     is( $ftp->mock_connection_mode(), 'port');
+    is( $ftp->mock_port_no(),         '20');
+
+    # specify port no
+    $ftp = prepare_ftp(Port=>1122);
+    is( $ftp->mock_connection_mode(), 'port');
+    is( $ftp->mock_port_no(),         '1122');
 
     done_testing();
 };

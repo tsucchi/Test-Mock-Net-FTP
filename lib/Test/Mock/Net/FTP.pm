@@ -77,7 +77,12 @@ sub new {
     my $class = shift;
     my ( $host, %opts ) = @_;
     return if ( !exists $mock_server{$host} );
-    my $connection_mode = !defined $opts{Passive} || !!$opts{Passive} ? 'pasv' : 'port';
+
+    my $connection_mode = ((!defined $opts{Passive} && !defined $opts{Port} ) || !!$opts{Passive}) ? 'pasv' : 'port';
+    my $port_no = $connection_mode eq 'pasv' ? ''
+                                             : defined $opts{Port} ? $opts{Port}
+                                                                   : '20';
+
 
     my $self = {
         mock_host            => $host,
@@ -85,6 +90,7 @@ sub new {
         mock_server_root     => '',
         mock_transfer_mode   => 'ascii',
         mock_connection_mode => $connection_mode,
+        mock_port_no         => $port_no,
     };
     bless $self, $class;
 }
@@ -350,7 +356,9 @@ specify data connection to port-mode
 
 sub port {
     my $self = shift;
+    my ($port_no) = @_;
     $self->{mock_connection_mode} = 'port';
+    $self->{mock_port_no} = $port_no;
 }
 
 =head2 pasv()
@@ -362,6 +370,7 @@ specify data connection to passive-mode
 sub pasv {
     my $self = shift;
     $self->{mock_connection_mode} = 'pasv';
+    $self->{mock_port_no} = '';
 }
 
 =head2 mock_connection_mode()
@@ -375,6 +384,16 @@ sub mock_connection_mode {
     return $self->{mock_connection_mode};
 }
 
+=head2 mock_port_no()
+
+return current port no
+
+=cut
+
+sub mock_port_no {
+    my $self = shift;
+    return $self->{mock_port_no};
+}
 
 =head2 binary()
 
