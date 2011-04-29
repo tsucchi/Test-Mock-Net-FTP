@@ -243,6 +243,49 @@ sub put {
           $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
 }
 
+=head2 put_unique($local_file, [$remote_file])
+
+same as put() but if same file exists in server. rename to unique filename
+(in this module, simply add suffix .1(.2, .3...). and suffix is limited to 1024)
+
+=cut
+
+sub put_unique {
+    my $self = shift;
+    my($local_file, $remote_file) = @_;
+    $remote_file = basename($local_file) if ( !defined $remote_file );
+
+    my $newfile = $self->_unique_new_name($remote_file);
+    copy( $self->_abs_local_file($local_file),
+          $self->_abs_remote_file($newfile) ) || croak "can't put $local_file to $remote_file\n";
+    $self->{mock_unique_name} = $newfile;
+}
+
+sub _unique_new_name {
+    my $self = shift;
+    my ($remote_file) = @_;
+    my $suffix = "";
+    my $newfile = $remote_file;
+    for ( my $i=1; $i<1024; $i++ ) {
+        last if ( !-e $self->_abs_remote_file($newfile) );
+        $suffix = ".$i";
+        $newfile = $remote_file . $suffix;
+    }
+    return $newfile;
+}
+
+=head2 unique_name()
+
+return unique filename when put_unique() called.
+
+=cut
+
+sub unique_name {
+    my $self = shift;
+    return $self->{mock_unique_name};
+}
+
+
 =head2 get($remote_file, [$local_file])
 
 get file from mock FTP server

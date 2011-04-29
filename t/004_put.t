@@ -15,7 +15,10 @@ subtest 'default put', sub {
     $ftp->cwd('dir1');
     $ftp->put($data);
 
-    file_contents_ok(catfile($ftp->mock_physical_root, 'dir1', 'data1.txt'), "this is testdata #1\n");
+    my $put_file = catfile($ftp->mock_physical_root, 'dir1', 'data1.txt');
+    file_contents_ok($put_file, "this is testdata #1\n");
+
+    unlink($put_file);
     done_testing();
 };
 
@@ -28,8 +31,10 @@ subtest 'default put and chdir', sub {
     $ftp->cwd('dir1');
     $ftp->put($data_abs);
 
-    file_contents_ok(catfile($ftp->mock_physical_root, 'dir1', 'data1.txt'), "this is testdata #1\n");
+    my $put_file = catfile($ftp->mock_physical_root, 'dir1', 'data1.txt');
+    file_contents_ok($put_file, "this is testdata #1\n");
 
+    unlink($put_file);
     chdir $cwd;
     done_testing();
 };
@@ -39,8 +44,10 @@ subtest 'specify remote filename', sub {
     my $ftp = prepare_ftp();
     $ftp->put( $data, catfile('dir2', 'data1_another_name.txt') );
 
-    file_contents_ok( catfile($ftp->mock_physical_root, 'dir2', 'data1_another_name.txt'),
-                      "this is testdata #1\n");
+    my $put_file = catfile($ftp->mock_physical_root, 'dir2', 'data1_another_name.txt');
+    file_contents_ok($put_file, "this is testdata #1\n");
+
+    unlink($put_file);
     done_testing();
 };
 
@@ -50,8 +57,29 @@ subtest 'specify absolute path', sub {
     my $ftp = prepare_ftp();
     $ftp->put( $data, '/ftproot/dir2/data1_another_name2.txt' );
 
-    file_contents_ok( catfile($ftp->mock_physical_root, 'dir2', 'data1_another_name2.txt'),
-                      "this is testdata #1\n");
+    my $put_file = catfile($ftp->mock_physical_root, 'dir2', 'data1_another_name2.txt');
+    file_contents_ok($put_file, "this is testdata #1\n");
+
+    unlink($put_file);
+    done_testing();
+};
+
+subtest 'put_unique', sub {
+    my $ftp = prepare_ftp();
+
+    $ftp->cwd('dir1');
+    $ftp->put($data); # normal put
+
+    my $put_data_1 = catfile($ftp->mock_physical_root, 'dir1', 'data1.txt');
+    file_contents_ok($put_data_1, "this is testdata #1\n");
+
+    is( $ftp->put_unique($data), 'data1.txt.1');
+    is( $ftp->unique_name,       'data1.txt.1');
+
+    my $put_data_2 = catfile($ftp->mock_physical_root, 'dir1', 'data1.txt.1');
+    file_contents_ok($put_data_1, "this is testdata #1\n");# previous file exist
+    file_contents_ok($put_data_2, "this is testdata #1\n");#'.1' is added for unique_name
+
     done_testing();
 };
 

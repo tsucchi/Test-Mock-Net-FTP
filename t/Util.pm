@@ -41,9 +41,9 @@ sub file_contents_ok {
     my ($filename, $expected_string) = @_;
     local $Test::Builder::Level += 1;
 
-    ok( -e $filename );
+    ok( -e $filename, "$filename exists." );
 
-    open my $IN, '<', $filename or die $@;
+    open my $IN, '<', $filename or die "$filename: $!";
     my $contents = do { local $/; <$IN>};
     close $IN;
     is( $contents, $expected_string);
