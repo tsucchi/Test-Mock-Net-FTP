@@ -68,6 +68,56 @@ subtest 'alloc', sub {
     done_testing();
 };
 
+subtest 'nlst', sub {
+    my $ftp = prepare_ftp();
+    $ftp->nlst('aaa');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'list', sub {
+    my $ftp = prepare_ftp();
+    $ftp->list('aaa');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'retr', sub {
+    my $ftp = prepare_ftp();
+    $ftp->retr('file.txt');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'stor', sub {
+    my $ftp = prepare_ftp();
+    $ftp->stor('file.txt');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'stou', sub {
+    my $ftp = prepare_ftp();
+    $ftp->stou('file.txt');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'appe', sub {
+    my $ftp = prepare_ftp();
+    $ftp->appe('file.txt');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'quot', sub {
+    my $ftp = prepare_ftp();
+    $ftp->quot('somecmd');
+    ok(1); #dummy
+    done_testing();
+};
+
+
 subtest 'size', sub {
     my $ftp = prepare_ftp();
     copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) );

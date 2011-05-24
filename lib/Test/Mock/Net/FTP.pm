@@ -566,6 +566,83 @@ sub alloc {
     return 1;
 }
 
+=head2 nlst([$dir])
+
+nlst. currently do_nothing.
+
+=cut
+
+sub nlst {
+    my $self = shift;
+    return 1;
+}
+
+=head2 list([$dir])
+
+list. currently do_nothing.
+
+=cut
+
+sub list {
+    my $self = shift;
+    return 1;
+}
+
+=head2 retr($file)
+
+retr. currently do_nothing.
+
+=cut
+
+sub retr {
+    my $self = shift;
+    return 1;
+}
+
+=head2 stou($file)
+
+stou. currently do_nothing.
+
+=cut
+
+sub stou {
+    my $self = shift;
+    return 1;
+}
+
+=head2 stor($file)
+
+stor. currently do_nothing.
+
+=cut
+
+sub stor {
+    my $self = shift;
+    return 1;
+}
+
+=head2 appe($file)
+
+appe. currently do_nothing.
+
+=cut
+
+sub appe {
+    my $self = shift;
+    return 1;
+}
+
+=head2 quot($cmd, @args)
+
+quot. currently do_nothing.
+
+=cut
+
+sub quot {
+    my $self = shift;
+    return 1;
+}
+
 
 sub _remote_dir_for_dir {
     my $self = shift;
