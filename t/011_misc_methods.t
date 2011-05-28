@@ -117,6 +117,53 @@ subtest 'quot', sub {
     done_testing();
 };
 
+subtest 'supported', sub {
+    my $ftp = prepare_ftp();
+    ok( $ftp->supported() );
+    done_testing();
+};
+
+subtest 'authorize', sub {
+    my $ftp = prepare_ftp();
+    $ftp->authorize();
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'feature', sub {
+    my $ftp = prepare_ftp();
+    is_deeply([$ftp->feature('MDTM')], ['MDTM']);
+    done_testing();
+};
+
+subtest 'restart', sub {
+    my $ftp = prepare_ftp();
+    $ftp->restart('somewhere');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'pasv_xfer', sub {
+    my $ftp = prepare_ftp();
+    $ftp->pasv_xfer('file.txt', 'someserver');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'pasv_xfer_unique', sub {
+    my $ftp = prepare_ftp();
+    $ftp->pasv_xfer_unique('file.txt', 'someserver');
+    ok(1); #dummy
+    done_testing();
+};
+
+subtest 'pasv_wait', sub {
+    my $ftp = prepare_ftp();
+    $ftp->pasv_wait('someserver');
+    ok(1); #dummy
+    done_testing();
+};
+
 
 subtest 'size', sub {
     my $ftp = prepare_ftp();

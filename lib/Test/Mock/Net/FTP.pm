@@ -8,6 +8,7 @@ use File::Basename;
 use Cwd qw(getcwd);
 use Carp;
 use File::Path qw(make_path remove_tree);
+use File::Slurp;
 
 our $VERSION = '0.01';
 
@@ -242,6 +243,22 @@ sub put {
     copy( $self->_abs_local_file($local_file),
           $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
 }
+
+=head2 append($local_file, [$remote_file])
+
+put a file to mock FTP server. if file already exists, append file contents in server file.
+
+=cut
+
+sub append {
+    my $self = shift;
+    my($local_file, $remote_file) = @_;
+
+    $remote_file = basename($local_file) if ( !defined $remote_file );
+    my $local_contents = read_file( $self->_abs_local_file($local_file) );
+    write_file( $self->_abs_remote_file($remote_file), { append => 1 }, $local_contents);
+}
+
 
 =head2 put_unique($local_file, [$remote_file])
 
@@ -643,6 +660,84 @@ sub quot {
     return 1;
 }
 
+=head2 supported($cmd)
+
+supported. currently do_nothing, and always returns true.
+
+=cut
+
+sub supported {
+    my $self = shift;
+    return 1;
+}
+
+=head2 authorize( [$auth, [$resp]] )
+
+authorize. currently do_nothing.
+
+=cut
+
+sub authorize {
+    my $self = shift;
+    return 1;
+}
+
+=head2 feature( $cmd )
+
+reature. currently returns list of $cmd.
+
+=cut
+
+sub feature {
+    my $self = shift;
+    my ($cmd) = @_;
+    return ($cmd);
+}
+
+=head2 restart( $where )
+
+restart. currently do_nothing
+
+=cut
+
+sub restart {
+    my $self = shift;
+    return 1;
+}
+
+=head2 pasv_xfer( $src_file, $dest_server, [$dest_file] )
+
+pasv_xfer. currently do_nothing
+
+=cut
+
+sub pasv_xfer {
+    my $self = shift;
+    return 1;
+}
+
+=head2 pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )
+
+pasv_xfer_unique. currently do_nothing
+
+=cut
+
+sub pasv_xfer_unique {
+    my $self = shift;
+    return 1;
+}
+
+=head2 pasv_wait( $non_pasv_server )
+
+pasv_wait. currently do_nothing
+
+=cut
+
+sub pasv_wait {
+    my $self = shift;
+    return 1;
+}
+
 
 sub _remote_dir_for_dir {
     my $self = shift;
@@ -711,13 +806,13 @@ sub _mock_intercept {
     }
 }
 
-sub AUTOLOAD {
-    our $AUTOLOAD;
-    (my $method = $AUTOLOAD) =~ s/.*:://s;
-    carp "Not Impremented method $method called.";
-}
+# sub AUTOLOAD {
+#     our $AUTOLOAD;
+#     (my $method = $AUTOLOAD) =~ s/.*:://s;
+#     carp "Not Impremented method $method called.";
+# }
 
-sub DESTROY {}
+# sub DESTROY {}
 
 1;
 
