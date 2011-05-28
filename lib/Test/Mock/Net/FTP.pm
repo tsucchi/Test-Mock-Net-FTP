@@ -283,7 +283,7 @@ sub _unique_new_name {
     my ($remote_file) = @_;
     my $suffix = "";
     my $newfile = $remote_file;
-    for ( my $i=1; $i<1024; $i++ ) {
+    for ( my $i=1; $i<=1024; $i++ ) {
         last if ( !-e $self->_abs_remote_file($newfile) );
         $suffix = ".$i";
         $newfile = $remote_file . $suffix;
@@ -806,13 +806,6 @@ sub _mock_intercept {
     }
 }
 
-# sub AUTOLOAD {
-#     our $AUTOLOAD;
-#     (my $method = $AUTOLOAD) =~ s/.*:://s;
-#     carp "Not Impremented method $method called.";
-# }
-
-# sub DESTROY {}
 
 1;
 
