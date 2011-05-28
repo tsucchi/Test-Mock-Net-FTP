@@ -6,6 +6,8 @@ license         'perl';
 
 perl_version    '5.008';
 all_from        'lib/Test/Mock/Net/FTP.pm';
+
+requires        'File::Slurp';
 test_requires   'Test::More'  => '0.94';   #want to use done_testing() and subtest
 test_requires   'parent';
 
