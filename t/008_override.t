@@ -60,7 +60,8 @@ subtest 'other methods', sub {
         'stou',             'stor',       'appe',
         'quot',             'supported',  'authorize',
         'feature',          'restart',    'pasv_xfer',
-        'pasv_xfer_unique', 'pasv_wait',
+        'pasv_xfer_unique', 'pasv_wait',  'ls',
+        'dir',              'pwd',
     );
 
     for my $method ( @methods ) {
