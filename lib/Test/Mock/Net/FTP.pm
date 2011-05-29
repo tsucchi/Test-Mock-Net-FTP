@@ -94,8 +94,7 @@ create new instance
 =cut
 
 sub new {
-    my $class = shift;
-    my ( $host, %opts ) = @_;
+    my ($class, $host, %opts ) = @_;
     return if ( !exists $mock_server{$host} );
 
     my ($connection_mode, $port_no) = _connection_mode_and_port_no(%opts);
@@ -127,8 +126,8 @@ login mock FTP server
 =cut
 
 sub login {
-    my $self = shift;
-    my ( $user, $pass ) = @_;
+    my ($self, $user, $pass) = @_;
+
     if ( $self->_mock_login_auth( $user, $pass) ) {# auth success
         my $cwd = getcwd();
         chdir $cwd_when_prepared;# chdir for absolute path
@@ -146,10 +145,11 @@ sub login {
 }
 
 sub _mock_login_auth {
-    my $self = shift;
-    my ( $user, $pass ) = @_;
+    my ($self, $user, $pass) = @_;
+
     my $server_user     = $mock_server{$self->{mock_host}}->{$user};
     return if !defined $server_user; #user not found
+
     my $server_password = $server_user->{password};
     return $server_password eq $pass;
 }
@@ -177,7 +177,7 @@ mock's current directory
 =cut
 
 sub mock_pwd {
-    my $self = shift;
+    my ($self) = @_;
     return catdir($self->mock_physical_root, $self->_mock_cwd);
 }
 
@@ -188,7 +188,7 @@ mock's physical root directory
 =cut
 
 sub mock_physical_root {
-    my $self = shift;
+    my ($self) = @_;
     return $self->{mock_physical_root};
 }
 
@@ -235,8 +235,8 @@ sub cdup {
 
 
 sub _mock_cwd_each {
-    my $self = shift;
-    my ( $dir ) = @_;
+    my ($self, $dir) = @_;
+
     if ( $dir eq '..' ) {
         $self->cdup();
     }
@@ -247,8 +247,8 @@ sub _mock_cwd_each {
 
 # check if mock server directory "phisically" exists.
 sub _mock_check_pwd {
-    my $self = shift;
-    my( $backup_cwd ) = @_;
+    my ($self, $backup_cwd) = @_;
+
     if ( ! -d $self->mock_pwd ) {
         $self->{mock_cwd} = $backup_cwd;
         $self->{message} = 'Failed to change directory.';
@@ -264,7 +264,7 @@ put a file to mock FTP server
 =cut
 
 sub put {
-    my($self, $local_file, $remote_file) = @_;
+    my ($self, $local_file, $remote_file) = @_;
 
     goto &{ $self->{mock_override}->{put} } if ( exists $self->{mock_override}->{put} );
 
@@ -280,7 +280,7 @@ put a file to mock FTP server. if file already exists, append file contents in s
 =cut
 
 sub append {
-    my($self, $local_file, $remote_file) = @_;
+    my ($self, $local_file, $remote_file) = @_;
 
     goto &{ $self->{mock_override}->{append} } if ( exists $self->{mock_override}->{append} );
 
@@ -298,7 +298,7 @@ same as put() but if same file exists in server. rename to unique filename
 =cut
 
 sub put_unique {
-    my($self, $local_file, $remote_file) = @_;
+    my ($self, $local_file, $remote_file) = @_;
 
     goto &{ $self->{mock_override}->{put_unique} } if ( exists $self->{mock_override}->{put_unique} );
 
@@ -311,8 +311,8 @@ sub put_unique {
 }
 
 sub _unique_new_name {
-    my $self = shift;
-    my ($remote_file) = @_;
+    my ($self, $remote_file) = @_;
+
     my $suffix = "";
     my $newfile = $remote_file;
     for ( my $i=1; $i<=1024; $i++ ) {
@@ -362,6 +362,7 @@ list file(s) in server directory.
 
 sub ls {
     my ($self, $dir) = @_;
+
     goto &{ $self->{mock_override}->{ls} } if ( exists $self->{mock_override}->{ls} );
 
     my $target_dir = $self->_remote_dir_for_dir($dir);
@@ -381,6 +382,7 @@ list file(s) with detail information(ex. filesize) in server directory.
 
 sub dir {
     my ($self, $dir) = @_;
+
     goto &{ $self->{mock_override}->{dir} } if ( exists $self->{mock_override}->{dir} );
 
     my $target_dir = $self->_remote_dir_for_dir($dir);
@@ -496,7 +498,8 @@ return current connection mode (port or pasv)
 =cut
 
 sub mock_connection_mode {
-    my $self = shift;
+    my ($self) = @_;
+
     return $self->{mock_connection_mode};
 }
 
@@ -507,7 +510,8 @@ return current port no
 =cut
 
 sub mock_port_no {
-    my $self = shift;
+    my ($self) = @_;
+
     return $self->{mock_port_no};
 }
 
@@ -546,7 +550,8 @@ return current transfer mode(ascii or binary)
 =cut
 
 sub mock_transfer_mode {
-    my $self = shift;
+    my ($self) = @_;
+
     return $self->{mock_transfer_mode};
 }
 
@@ -615,6 +620,7 @@ returns filesize in remote (mock) server. but currently always return 1
 
 sub size {
     my ($self, $filename) = @_;
+
     goto &{ $self->{mock_override}->{size} } if ( exists $self->{mock_override}->{size} );
 
     return 1;
@@ -860,34 +866,35 @@ sub pasv_wait {
 
 
 sub _remote_dir_for_dir {
-    my $self = shift;
-    my($dir) = @_;
+    my ($self, $dir) = @_;
+
     $dir =~ s/^$self->{mock_server_root}// if (defined $dir && $dir =~ /^$self->{mock_server_root}/ ); #absolute path
     $dir = "" if !defined $dir;
     return catdir($self->mock_pwd, $dir);
 }
 
 sub _remote_dir_for_file {
-    my $self = shift;
-    my( $remote_file ) = @_;
+    my ($self, $remote_file) = @_;
+
     my $remote_dir = dirname( $remote_file ) eq curdir() ? $self->{mock_cwd} : dirname( $remote_file ) ;
     $remote_dir =~ s/^$self->{mock_server_root}// if ( $remote_file =~ /^$self->{mock_server_root}/ );
     return $remote_dir;
 }
 
 sub _abs_remote_file {
-    my $self = shift;
-    my( $remote_file ) = @_;
+    my ($self, $remote_file) = @_;
+
     my $remote_dir = $self->_remote_dir_for_file($remote_file);
     $remote_dir = "" if !defined $remote_dir;
     return catfile($self->{mock_physical_root}, $remote_dir, basename($remote_file))
 }
 
 sub _abs_local_file {
-    my $self = shift;
-    my ($local_file) = @_;
+    my ($self, $local_file) = @_;
+
     my $root = rootdir();
     return $local_file if ( $local_file =~ m{^$root} );
+
     my $local_dir = dirname( $local_file ) eq curdir() ? getcwd() : dirname( $local_file );
     $local_dir = "" if !defined $local_dir;
     return catfile($local_dir, basename($local_file));
@@ -908,7 +915,7 @@ sub message {
 }
 
 sub _mock_cwd {
-    my $self = shift;
+    my ($self) = @_;
     return (defined $self->{mock_cwd}) ? $self->{mock_cwd} : "";
 }
 
