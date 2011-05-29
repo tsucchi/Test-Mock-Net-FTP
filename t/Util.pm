@@ -39,7 +39,7 @@ sub prepare_ftp {
 
 sub file_contents_ok {
     my ($filename, $expected_string) = @_;
-    local $Test::Builder::Level += 1;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     ok( -e $filename, "$filename exists." );
 
