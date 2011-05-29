@@ -118,6 +118,7 @@ sub login {
         $self->{mock_physical_root} = rel2abs($dir->[0]) if defined $dir->[0];
         $self->{mock_server_root}   = $dir->[1];
         $self->{mock_cwd}           = rootdir();
+        $self->{mock_override}      = $mock_server_for_user->{override};
         chdir $cwd;
         return 1;
     }
@@ -142,7 +143,10 @@ return (mock) server current directory
 =cut
 
 sub pwd {
-    my $self =shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{pwd} } if ( exists $self->{mock_override}->{pwd} );
+
     return catdir($self->{mock_server_root}, $self->_mock_cwd);
 }
 
@@ -177,8 +181,10 @@ change (mock) server current directory
 =cut
 
 sub cwd {
-    my $self = shift;
-    my ($dirs) = @_;
+    my ($self, $dirs) = @_;
+
+    goto &{ $self->{mock_override}->{cwd} } if ( exists $self->{mock_override}->{cwd} );
+
     if ( !defined $dirs ) {
         $self->{mock_cwd} = rootdir();
         $dirs = "";
@@ -199,7 +205,9 @@ change (mock) server directory to parent
 =cut
 
 sub cdup {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{cdup} } if ( exists $self->{mock_override}->{cdup} );
 
     my $backup_cwd = $self->_mock_cwd;
     $self->{mock_cwd} = dirname($self->_mock_cwd);# to updir
@@ -237,8 +245,10 @@ put a file to mock FTP server
 =cut
 
 sub put {
-    my $self = shift;
-    my($local_file, $remote_file) = @_;
+    my($self, $local_file, $remote_file) = @_;
+
+    goto &{ $self->{mock_override}->{put} } if ( exists $self->{mock_override}->{put} );
+
     $remote_file = basename($local_file) if ( !defined $remote_file );
     copy( $self->_abs_local_file($local_file),
           $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
@@ -251,8 +261,9 @@ put a file to mock FTP server. if file already exists, append file contents in s
 =cut
 
 sub append {
-    my $self = shift;
-    my($local_file, $remote_file) = @_;
+    my($self, $local_file, $remote_file) = @_;
+
+    goto &{ $self->{mock_override}->{append} } if ( exists $self->{mock_override}->{append} );
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
     my $local_contents = read_file( $self->_abs_local_file($local_file) );
@@ -268,8 +279,10 @@ same as put() but if same file exists in server. rename to unique filename
 =cut
 
 sub put_unique {
-    my $self = shift;
-    my($local_file, $remote_file) = @_;
+    my($self, $local_file, $remote_file) = @_;
+
+    goto &{ $self->{mock_override}->{put_unique} } if ( exists $self->{mock_override}->{put_unique} );
+
     $remote_file = basename($local_file) if ( !defined $remote_file );
 
     my $newfile = $self->_unique_new_name($remote_file);
@@ -298,7 +311,9 @@ return unique filename when put_unique() called.
 =cut
 
 sub unique_name {
-    my $self = shift;
+    my ($self) = @_;
+    goto &{ $self->{mock_override}->{unique_name} } if ( exists $self->{mock_override}->{unique_name} );
+
     return $self->{mock_unique_name};
 }
 
@@ -310,8 +325,10 @@ get file from mock FTP server
 =cut
 
 sub get {
-    my $self = shift;
-    my($remote_file, $local_file) = @_;
+    my($self, $remote_file, $local_file) = @_;
+
+    goto &{ $self->{mock_override}->{get} } if ( exists $self->{mock_override}->{get} );
+
     $local_file = basename($remote_file) if ( !defined $local_file );
     copy( $self->_abs_remote_file($remote_file),
           $self->_abs_local_file($local_file)   ) || croak "can't get $remote_file\n";
@@ -325,8 +342,9 @@ list file(s) in server directory.
 =cut
 
 sub ls {
-    my $self = shift;
-    my ($dir) = @_;
+    my ($self, $dir) = @_;
+    goto &{ $self->{mock_override}->{ls} } if ( exists $self->{mock_override}->{ls} );
+
     my $target_dir = $self->_remote_dir_for_dir($dir);
     my @ls = split(/\n/, `ls $target_dir`);
     my @result =  (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
@@ -343,8 +361,9 @@ list file(s) with detail information(ex. filesize) in server directory.
 =cut
 
 sub dir {
-    my $self = shift;
-    my ($dir) = @_;
+    my ($self, $dir) = @_;
+    goto &{ $self->{mock_override}->{dir} } if ( exists $self->{mock_override}->{dir} );
+
     my $target_dir = $self->_remote_dir_for_dir($dir);
     my @dir = split(/\n/, `ls -l $target_dir`);
     shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
@@ -360,8 +379,10 @@ rename remote file
 =cut
 
 sub rename {
-    my $self = shift;
-    my ($oldname, $newname) = @_;
+    my ($self, $oldname, $newname) = @_;
+
+    goto &{ $self->{mock_override}->{rename} } if ( exists $self->{mock_override}->{rename} );
+
     rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname);
 }
 
@@ -372,8 +393,10 @@ delete remote file
 =cut
 
 sub delete {
-    my $self = shift;
-    my ($filename) = @_;
+    my ($self, $filename) = @_;
+
+    goto &{ $self->{mock_override}->{delete} } if ( exists $self->{mock_override}->{delete} );
+
     unlink $self->_abs_remote_file($filename);
 }
 
@@ -385,8 +408,10 @@ mkdir to remove (mock) server. when $recursive_bool is true, dir is recursively 
 =cut
 
 sub mkdir {
-    my $self = shift;
-    my ($dirname, $recursive_bool) = @_;
+    my ($self, $dirname, $recursive_bool) = @_;
+
+    goto &{ $self->{mock_override}->{mkdir} } if ( exists $self->{mock_override}->{mkdir} );
+
     if ( !!$recursive_bool ) {
         make_path( $self->_abs_remote_file($dirname) );
     }
@@ -402,8 +427,10 @@ rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively 
 =cut
 
 sub rmdir {
-    my $self = shift;
-    my ($dirname, $recursive_bool) = @_;
+    my ($self, $dirname, $recursive_bool) = @_;
+
+    goto &{ $self->{mock_override}->{rmdir} } if ( exists $self->{mock_override}->{rmdir} );
+
     if ( !!$recursive_bool ) {
         remove_tree( $self->_abs_remote_file($dirname) );
     }
@@ -420,8 +447,10 @@ specify data connection to port-mode
 =cut
 
 sub port {
-    my $self = shift;
-    my ($port_no) = @_;
+    my ($self, $port_no) = @_;
+
+    goto &{ $self->{mock_override}->{port} } if ( exists $self->{mock_override}->{port} );
+
     $self->{mock_connection_mode} = 'port';
     $self->{mock_port_no} = $port_no;
 }
@@ -433,7 +462,10 @@ specify data connection to passive-mode
 =cut
 
 sub pasv {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{pasv} } if ( exists $self->{mock_override}->{pasv} );
+
     $self->{mock_connection_mode} = 'pasv';
     $self->{mock_port_no} = '';
 }
@@ -467,7 +499,10 @@ enter binary mode
 =cut
 
 sub binary {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{binary} } if ( exists $self->{mock_override}->{binary} );
+
     $self->{mock_transfer_mode} = 'binary';
 }
 
@@ -478,7 +513,10 @@ enter ascii mode
 =cut
 
 sub ascii {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{ascii} } if ( exists $self->{mock_override}->{ascii} );
+
     $self->{mock_transfer_mode} = 'ascii';
 }
 
@@ -500,7 +538,10 @@ quit. currently do nothing
 =cut
 
 sub quit {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{quit} } if ( exists $self->{mock_override}->{quit} );
+
     return 1;
 }
 
@@ -511,6 +552,10 @@ close connection mock FTP server.(eventually do nothing)
 =cut
 
 sub close {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{close} } if ( exists $self->{mock_override}->{close} );
+
     return 1;
 }
 
@@ -521,7 +566,10 @@ abort. currently do nothing
 =cut
 
 sub abort {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{abort} } if ( exists $self->{mock_override}->{abort} );
+
     return 1;
 }
 
@@ -533,7 +581,10 @@ execute SITE command (currently do nothing)
 =cut
 
 sub site {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{site} } if ( exists $self->{mock_override}->{site} );
+
     return 1;
 }
 
@@ -544,8 +595,9 @@ returns filesize in remote (mock) server. but currently always return 1
 =cut
 
 sub size {
-    my $self = shift;
-    my ($filename) = @_;
+    my ($self, $filename) = @_;
+    goto &{ $self->{mock_override}->{size} } if ( exists $self->{mock_override}->{size} );
+
     return 1;
 }
 
@@ -556,8 +608,10 @@ returns file modification time in remote (mock) server. but currently always ret
 =cut
 
 sub mdtm {
-    my $self = shift;
-    my ($filename) = @_;
+    my ($self, $filename) = @_;
+
+    goto &{ $self->{mock_override}->{mdtm} } if ( exists $self->{mock_override}->{mdtm} );
+
     return 1;
 }
 
@@ -568,7 +622,10 @@ hash currently do_nothing.
 =cut
 
 sub hash {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{hash} } if ( exists $self->{mock_override}->{hash} );
+
     return 1;
 }
 
@@ -579,7 +636,10 @@ alloc. currently do_nothing.
 =cut
 
 sub alloc {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{alloc} } if ( exists $self->{mock_override}->{alloc} );
+
     return 1;
 }
 
@@ -590,7 +650,10 @@ nlst. currently do_nothing.
 =cut
 
 sub nlst {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{nlst} } if ( exists $self->{mock_override}->{nlst} );
+
     return 1;
 }
 
@@ -601,7 +664,10 @@ list. currently do_nothing.
 =cut
 
 sub list {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{list} } if ( exists $self->{mock_override}->{list} );
+
     return 1;
 }
 
@@ -612,7 +678,10 @@ retr. currently do_nothing.
 =cut
 
 sub retr {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{retr} } if ( exists $self->{mock_override}->{retr} );
+
     return 1;
 }
 
@@ -623,7 +692,10 @@ stou. currently do_nothing.
 =cut
 
 sub stou {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{stou} } if ( exists $self->{mock_override}->{stou} );
+
     return 1;
 }
 
@@ -634,7 +706,10 @@ stor. currently do_nothing.
 =cut
 
 sub stor {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{stor} } if ( exists $self->{mock_override}->{stor} );
+
     return 1;
 }
 
@@ -645,7 +720,10 @@ appe. currently do_nothing.
 =cut
 
 sub appe {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{appe} } if ( exists $self->{mock_override}->{appe} );
+
     return 1;
 }
 
@@ -656,7 +734,10 @@ quot. currently do_nothing.
 =cut
 
 sub quot {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{quot} } if ( exists $self->{mock_override}->{quot} );
+
     return 1;
 }
 
@@ -667,7 +748,10 @@ supported. currently do_nothing, and always returns true.
 =cut
 
 sub supported {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{supported} } if ( exists $self->{mock_override}->{supported} );
+
     return 1;
 }
 
@@ -678,7 +762,10 @@ authorize. currently do_nothing.
 =cut
 
 sub authorize {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{authorize} } if ( exists $self->{mock_override}->{authorize} );
+
     return 1;
 }
 
@@ -689,8 +776,10 @@ reature. currently returns list of $cmd.
 =cut
 
 sub feature {
-    my $self = shift;
-    my ($cmd) = @_;
+    my ($self, $cmd) = @_;
+
+    goto &{ $self->{mock_override}->{feature} } if ( exists $self->{mock_override}->{feature} );
+
     return ($cmd);
 }
 
@@ -701,7 +790,10 @@ restart. currently do_nothing
 =cut
 
 sub restart {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{restart} } if ( exists $self->{mock_override}->{restart} );
+
     return 1;
 }
 
@@ -712,7 +804,10 @@ pasv_xfer. currently do_nothing
 =cut
 
 sub pasv_xfer {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{pasv_xfer} } if ( exists $self->{mock_override}->{pasv_xfer} );
+
     return 1;
 }
 
@@ -723,7 +818,10 @@ pasv_xfer_unique. currently do_nothing
 =cut
 
 sub pasv_xfer_unique {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{pasv_xfer_unique} } if ( exists $self->{mock_override}->{pasv_xfer_unique} );
+
     return 1;
 }
 
@@ -734,7 +832,10 @@ pasv_wait. currently do_nothing
 =cut
 
 sub pasv_wait {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{pasv_wait} } if ( exists $self->{mock_override}->{pasv_wait} );
+
     return 1;
 }
 
@@ -780,7 +881,10 @@ return messages from mock FTP server
 =cut
 
 sub message {
-    my $self = shift;
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{message} } if ( exists $self->{mock_override}->{message} );
+
     return $self->{message};
 }
 
@@ -805,7 +909,6 @@ sub _mock_intercept {
         return Test::Mock::Net::FTP->new(@_);
     }
 }
-
 
 1;
 

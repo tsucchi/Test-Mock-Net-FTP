@@ -7,28 +7,7 @@ use File::Spec::Functions qw(catfile catdir);
 use Test::Mock::Net::FTP;
 use Test::More;
 
-our @EXPORT = qw(prepare_ftp file_contents_ok);
-
-BEGIN {
-    remove_tree 'tmp' if ( -e 'tmp' );
-    make_path( catdir('tmp', 'ftpserver', 'dir1'),
-               catdir('tmp', 'ftpserver', 'dir1', 'dir2'),
-               catdir('tmp', 'ftpserver', 'dir1', 'dir3'),
-               catdir('tmp', 'ftpserver', 'dir2') );
-
-    Test::Mock::Net::FTP::mock_prepare(
-        'somehost.example.com', => {
-            'user1'=> {
-                password => 'secret',
-                dir => ['tmp/ftpserver', '/ftproot'],
-            },
-        },
-    );
-}
-
-END {
-    remove_tree('tmp');
-}
+our @EXPORT = qw(prepare_ftp file_contents_ok default_mock_prepare);
 
 sub prepare_ftp {
     my (%option) = @_;
@@ -36,6 +15,35 @@ sub prepare_ftp {
     $ftp->login('user1', 'secret');
     return $ftp;
 }
+
+sub default_mock_prepare {
+    my (%override_sub) = @_;
+
+    Test::Mock::Net::FTP::mock_prepare(
+        'somehost.example.com', => {
+            'user1'=> {
+                password => 'secret',
+                dir      => ['tmp/ftpserver', '/ftproot'],
+                override => \%override_sub,
+            },
+        },
+    );
+    return prepare_ftp();
+}
+
+BEGIN {
+    remove_tree 'tmp' if ( -e 'tmp' );
+    make_path( catdir('tmp', 'ftpserver', 'dir1'),
+               catdir('tmp', 'ftpserver', 'dir1', 'dir2'),
+               catdir('tmp', 'ftpserver', 'dir1', 'dir3'),
+               catdir('tmp', 'ftpserver', 'dir2') );
+    default_mock_prepare();
+}
+
+END {
+    remove_tree('tmp');
+}
+
 
 sub file_contents_ok {
     my ($filename, $expected_string) = @_;
