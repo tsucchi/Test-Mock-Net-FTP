@@ -86,6 +86,64 @@ sub mock_prepare {
     $cwd_when_prepared = getcwd();
 }
 
+=head2 mock_pwd()
+
+mock's current directory
+
+=cut
+
+sub mock_pwd {
+    my ($self) = @_;
+    return catdir($self->mock_physical_root, $self->_mock_cwd);
+}
+
+=head2 mock_physical_root()
+
+mock's physical root directory
+
+=cut
+
+sub mock_physical_root {
+    my ($self) = @_;
+    return $self->{mock_physical_root};
+}
+
+=head2 mock_connection_mode()
+
+return current connection mode (port or pasv)
+
+=cut
+
+sub mock_connection_mode {
+    my ($self) = @_;
+
+    return $self->{mock_connection_mode};
+}
+
+=head2 mock_port_no()
+
+return current port no
+
+=cut
+
+sub mock_port_no {
+    my ($self) = @_;
+
+    return $self->{mock_port_no};
+}
+
+=head2 mock_transfer_mode()
+
+return current transfer mode(ascii or binary)
+
+=cut
+
+sub mock_transfer_mode {
+    my ($self) = @_;
+
+    return $self->{mock_transfer_mode};
+}
+
 
 =head2 new($host, %options)
 
@@ -121,7 +179,7 @@ sub _connection_mode_and_port_no {
 
 =head2 login($user, $password)
 
-login mock FTP server
+login mock FTP server. this method IS NOT allowed to be overrided.
 
 =cut
 
@@ -154,48 +212,104 @@ sub _mock_login_auth {
     return $server_password eq $pass;
 }
 
+=head2 authorize( [$auth, [$resp]] )
 
-=head2 pwd()
-
-return (mock) server current directory
+authorize.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
-sub pwd {
+sub authorize {
     my ($self) = @_;
 
-    goto &{ $self->{mock_override}->{pwd} } if ( exists $self->{mock_override}->{pwd} );
+    goto &{ $self->{mock_override}->{authorize} } if ( exists $self->{mock_override}->{authorize} );
 
-    return catdir($self->{mock_server_root}, $self->_mock_cwd);
+    return 1;
+}
+
+=head2 site(@args)
+
+execute SITE command. 
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub site {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{site} } if ( exists $self->{mock_override}->{site} );
+
+    return 1;
+}
+
+=head2 ascii()
+
+enter ascii mode.
+mock_transfer_mode() returns 'ascii'.
+this methos is allowed to be overrided.
+
+=cut
+
+sub ascii {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{ascii} } if ( exists $self->{mock_override}->{ascii} );
+
+    $self->{mock_transfer_mode} = 'ascii';
 }
 
 
-=head2 mock_pwd()
+=head2 binary()
 
-mock's current directory
+enter binary mode.
+mock_transfer_mode() returns 'binary'.
+this methos is allowed to be overrided.
 
 =cut
 
-sub mock_pwd {
+sub binary {
     my ($self) = @_;
-    return catdir($self->mock_physical_root, $self->_mock_cwd);
+
+    goto &{ $self->{mock_override}->{binary} } if ( exists $self->{mock_override}->{binary} );
+
+    $self->{mock_transfer_mode} = 'binary';
 }
 
-=head2 mock_physical_root()
+=head2 rename($oldname, $newname)
 
-mock's physical root directory
+rename remote file.
+this methos is allowed to be overrided.
 
 =cut
 
-sub mock_physical_root {
-    my ($self) = @_;
-    return $self->{mock_physical_root};
+sub rename {
+    my ($self, $oldname, $newname) = @_;
+
+    goto &{ $self->{mock_override}->{rename} } if ( exists $self->{mock_override}->{rename} );
+
+    rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname);
+}
+
+=head2 delete($filename)
+
+delete remote file.
+this methos is allowed to be overrided.
+
+=cut
+
+sub delete {
+    my ($self, $filename) = @_;
+
+    goto &{ $self->{mock_override}->{delete} } if ( exists $self->{mock_override}->{delete} );
+
+    unlink $self->_abs_remote_file($filename);
 }
 
 
 =head2 cwd($dir)
 
 change (mock) server current directory
+this methos is allowed to be overrided.
 
 =cut
 
@@ -217,9 +331,11 @@ sub cwd {
     return $self->_mock_check_pwd($backup_cwd);
 }
 
+
 =head2 cdup()
 
 change (mock) server directory to parent
+this methos is allowed to be overrided.
 
 =cut
 
@@ -231,6 +347,21 @@ sub cdup {
     my $backup_cwd = $self->_mock_cwd;
     $self->{mock_cwd} = dirname($self->_mock_cwd);# to updir
     return $self->_mock_check_pwd($backup_cwd);
+}
+
+=head2 pwd()
+
+return (mock) server current directory
+this methos is allowed to be overrided.
+
+=cut
+
+sub pwd {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{pwd} } if ( exists $self->{mock_override}->{pwd} );
+
+    return catdir($self->{mock_server_root}, $self->_mock_cwd);
 }
 
 
@@ -257,9 +388,139 @@ sub _mock_check_pwd {
     return 1;
 }
 
+=head2 restart( $where )
+
+restart. currently do_nothing
+
+
+=cut
+
+sub restart {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{restart} } if ( exists $self->{mock_override}->{restart} );
+
+    return 1;
+}
+
+=head2 rmdir($dirname, $recursive_bool)
+
+rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively removed.
+this methos is allowed to be overrided.
+
+=cut
+
+sub rmdir {
+    my ($self, $dirname, $recursive_bool) = @_;
+
+    goto &{ $self->{mock_override}->{rmdir} } if ( exists $self->{mock_override}->{rmdir} );
+
+    if ( !!$recursive_bool ) {
+        remove_tree( $self->_abs_remote_file($dirname) );
+    }
+    else {
+        rmdir $self->_abs_remote_file($dirname);
+    }
+}
+
+
+=head2 mkdir($dirname, $recursive_bool)
+
+mkdir to remove (mock) server. when $recursive_bool is true, dir is recursively create.
+this methos is allowed to be overrided.
+
+=cut
+
+sub mkdir {
+    my ($self, $dirname, $recursive_bool) = @_;
+
+    goto &{ $self->{mock_override}->{mkdir} } if ( exists $self->{mock_override}->{mkdir} );
+
+    if ( !!$recursive_bool ) {
+        make_path( $self->_abs_remote_file($dirname) );
+    }
+    else {
+        mkdir $self->_abs_remote_file($dirname);
+    }
+}
+
+=head2 alloc($size, [$record_size])
+
+alloc. 
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub alloc {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{alloc} } if ( exists $self->{mock_override}->{alloc} );
+
+    return 1;
+}
+
+=head2 ls($dir)
+
+list file(s) in server directory.
+this methos is allowed to be overrided.
+
+=cut
+
+sub ls {
+    my ($self, $dir) = @_;
+
+    goto &{ $self->{mock_override}->{ls} } if ( exists $self->{mock_override}->{ls} );
+
+    my $target_dir = $self->_remote_dir_for_dir($dir);
+    my @ls = split(/\n/, `ls $target_dir`);
+    my @result =  (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
+
+    return @result if ( wantarray() );
+    return \@result;
+}
+
+=head2 dir($dir)
+
+list file(s) with detail information(ex. filesize) in server directory.
+this methos is allowed to be overrided.
+
+=cut
+
+sub dir {
+    my ($self, $dir) = @_;
+
+    goto &{ $self->{mock_override}->{dir} } if ( exists $self->{mock_override}->{dir} );
+
+    my $target_dir = $self->_remote_dir_for_dir($dir);
+    my @dir = split(/\n/, `ls -l $target_dir`);
+    shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
+
+    return @dir if ( wantarray() );
+    return \@dir;
+}
+
+=head2 get($remote_file, [$local_file])
+
+get file from mock FTP server
+this methos is allowed to be overrided.
+
+=cut
+
+sub get {
+    my($self, $remote_file, $local_file) = @_;
+
+    goto &{ $self->{mock_override}->{get} } if ( exists $self->{mock_override}->{get} );
+
+    $local_file = basename($remote_file) if ( !defined $local_file );
+    copy( $self->_abs_remote_file($remote_file),
+          $self->_abs_local_file($local_file)   ) || croak "can't get $remote_file\n";
+}
+
+
 =head2 put($local_file, [$remote_file])
 
 put a file to mock FTP server
+this methos is allowed to be overrided.
 
 =cut
 
@@ -273,27 +534,11 @@ sub put {
           $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
 }
 
-=head2 append($local_file, [$remote_file])
-
-put a file to mock FTP server. if file already exists, append file contents in server file.
-
-=cut
-
-sub append {
-    my ($self, $local_file, $remote_file) = @_;
-
-    goto &{ $self->{mock_override}->{append} } if ( exists $self->{mock_override}->{append} );
-
-    $remote_file = basename($local_file) if ( !defined $remote_file );
-    my $local_contents = read_file( $self->_abs_local_file($local_file) );
-    write_file( $self->_abs_remote_file($remote_file), { append => 1 }, $local_contents);
-}
-
-
 =head2 put_unique($local_file, [$remote_file])
 
 same as put() but if same file exists in server. rename to unique filename
 (in this module, simply add suffix .1(.2, .3...). and suffix is limited to 1024)
+this methos is allowed to be overrided.
 
 =cut
 
@@ -323,9 +568,30 @@ sub _unique_new_name {
     return $newfile;
 }
 
+
+=head2 append($local_file, [$remote_file])
+
+put a file to mock FTP server. if file already exists, append file contents in server file.
+this methos is allowed to be overrided.
+
+=cut
+
+sub append {
+    my ($self, $local_file, $remote_file) = @_;
+
+    goto &{ $self->{mock_override}->{append} } if ( exists $self->{mock_override}->{append} );
+
+    $remote_file = basename($local_file) if ( !defined $remote_file );
+    my $local_contents = read_file( $self->_abs_local_file($local_file) );
+    write_file( $self->_abs_remote_file($remote_file), { append => 1 }, $local_contents);
+}
+
+
+
 =head2 unique_name()
 
 return unique filename when put_unique() called.
+this methos is allowed to be overrided.
 
 =cut
 
@@ -336,299 +602,10 @@ sub unique_name {
     return $self->{mock_unique_name};
 }
 
-
-=head2 get($remote_file, [$local_file])
-
-get file from mock FTP server
-
-=cut
-
-sub get {
-    my($self, $remote_file, $local_file) = @_;
-
-    goto &{ $self->{mock_override}->{get} } if ( exists $self->{mock_override}->{get} );
-
-    $local_file = basename($remote_file) if ( !defined $local_file );
-    copy( $self->_abs_remote_file($remote_file),
-          $self->_abs_local_file($local_file)   ) || croak "can't get $remote_file\n";
-}
-
-
-=head2 ls($dir)
-
-list file(s) in server directory.
-
-=cut
-
-sub ls {
-    my ($self, $dir) = @_;
-
-    goto &{ $self->{mock_override}->{ls} } if ( exists $self->{mock_override}->{ls} );
-
-    my $target_dir = $self->_remote_dir_for_dir($dir);
-    my @ls = split(/\n/, `ls $target_dir`);
-    my @result =  (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
-
-    return @result if ( wantarray() );
-    return \@result;
-}
-
-
-=head2 dir($dir)
-
-list file(s) with detail information(ex. filesize) in server directory.
-
-=cut
-
-sub dir {
-    my ($self, $dir) = @_;
-
-    goto &{ $self->{mock_override}->{dir} } if ( exists $self->{mock_override}->{dir} );
-
-    my $target_dir = $self->_remote_dir_for_dir($dir);
-    my @dir = split(/\n/, `ls -l $target_dir`);
-    shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
-
-    return @dir if ( wantarray() );
-    return \@dir;
-}
-
-=head2 rename($oldname, $newname)
-
-rename remote file
-
-=cut
-
-sub rename {
-    my ($self, $oldname, $newname) = @_;
-
-    goto &{ $self->{mock_override}->{rename} } if ( exists $self->{mock_override}->{rename} );
-
-    rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname);
-}
-
-=head2 delete($filename)
-
-delete remote file
-
-=cut
-
-sub delete {
-    my ($self, $filename) = @_;
-
-    goto &{ $self->{mock_override}->{delete} } if ( exists $self->{mock_override}->{delete} );
-
-    unlink $self->_abs_remote_file($filename);
-}
-
-
-=head2 mkdir($dirname, $recursive_bool)
-
-mkdir to remove (mock) server. when $recursive_bool is true, dir is recursively create.
-
-=cut
-
-sub mkdir {
-    my ($self, $dirname, $recursive_bool) = @_;
-
-    goto &{ $self->{mock_override}->{mkdir} } if ( exists $self->{mock_override}->{mkdir} );
-
-    if ( !!$recursive_bool ) {
-        make_path( $self->_abs_remote_file($dirname) );
-    }
-    else {
-        mkdir $self->_abs_remote_file($dirname);
-    }
-}
-
-=head2 rmdir($dirname, $recursive_bool)
-
-rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively removed.
-
-=cut
-
-sub rmdir {
-    my ($self, $dirname, $recursive_bool) = @_;
-
-    goto &{ $self->{mock_override}->{rmdir} } if ( exists $self->{mock_override}->{rmdir} );
-
-    if ( !!$recursive_bool ) {
-        remove_tree( $self->_abs_remote_file($dirname) );
-    }
-    else {
-        rmdir $self->_abs_remote_file($dirname);
-    }
-}
-
-
-=head2 port($port_no)
-
-specify data connection to port-mode
-
-=cut
-
-sub port {
-    my ($self, $port_no) = @_;
-
-    goto &{ $self->{mock_override}->{port} } if ( exists $self->{mock_override}->{port} );
-
-    $self->{mock_connection_mode} = 'port';
-    $self->{mock_port_no} = $port_no;
-}
-
-=head2 pasv()
-
-specify data connection to passive-mode
-
-=cut
-
-sub pasv {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{pasv} } if ( exists $self->{mock_override}->{pasv} );
-
-    $self->{mock_connection_mode} = 'pasv';
-    $self->{mock_port_no} = '';
-}
-
-=head2 mock_connection_mode()
-
-return current connection mode (port or pasv)
-
-=cut
-
-sub mock_connection_mode {
-    my ($self) = @_;
-
-    return $self->{mock_connection_mode};
-}
-
-=head2 mock_port_no()
-
-return current port no
-
-=cut
-
-sub mock_port_no {
-    my ($self) = @_;
-
-    return $self->{mock_port_no};
-}
-
-=head2 binary()
-
-enter binary mode
-
-=cut
-
-sub binary {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{binary} } if ( exists $self->{mock_override}->{binary} );
-
-    $self->{mock_transfer_mode} = 'binary';
-}
-
-=head2 ascii()
-
-enter ascii mode
-
-=cut
-
-sub ascii {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{ascii} } if ( exists $self->{mock_override}->{ascii} );
-
-    $self->{mock_transfer_mode} = 'ascii';
-}
-
-=head2 mock_transfer_mode()
-
-return current transfer mode(ascii or binary)
-
-=cut
-
-sub mock_transfer_mode {
-    my ($self) = @_;
-
-    return $self->{mock_transfer_mode};
-}
-
-=head2 quit()
-
-quit. currently do nothing
-
-=cut
-
-sub quit {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{quit} } if ( exists $self->{mock_override}->{quit} );
-
-    return 1;
-}
-
-=head2 close()
-
-close connection mock FTP server.(eventually do nothing)
-
-=cut
-
-sub close {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{close} } if ( exists $self->{mock_override}->{close} );
-
-    return 1;
-}
-
-=head2 abort()
-
-abort. currently do nothing
-
-=cut
-
-sub abort {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{abort} } if ( exists $self->{mock_override}->{abort} );
-
-    return 1;
-}
-
-
-=head2 site(@args)
-
-execute SITE command (currently do nothing)
-
-=cut
-
-sub site {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{site} } if ( exists $self->{mock_override}->{site} );
-
-    return 1;
-}
-
-=head2 size($file)
-
-returns filesize in remote (mock) server. but currently always return 1
-
-=cut
-
-sub size {
-    my ($self, $filename) = @_;
-
-    goto &{ $self->{mock_override}->{size} } if ( exists $self->{mock_override}->{size} );
-
-    return 1;
-}
-
 =head2 mdtm($file)
 
 returns file modification time in remote (mock) server. but currently always return 1
+this methos is allowed to be overrided.
 
 =cut
 
@@ -640,9 +617,41 @@ sub mdtm {
     return 1;
 }
 
+=head2 size($file)
+
+returns filesize in remote (mock) server. but currently always return 1
+this methos is allowed to be overrided.
+
+=cut
+
+sub size {
+    my ($self, $filename) = @_;
+
+    goto &{ $self->{mock_override}->{size} } if ( exists $self->{mock_override}->{size} );
+
+    return 1;
+}
+
+
+=head2 supported($cmd)
+
+supported. 
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub supported {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{supported} } if ( exists $self->{mock_override}->{supported} );
+
+    return 1;
+}
+
 =head2 hash([$filehandle_glob_ref], [$bytes_per_hash_mark])
 
-hash currently do_nothing.
+hash.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -654,23 +663,25 @@ sub hash {
     return 1;
 }
 
-=head2 alloc($size, [$record_size])
+=head2 feature( $cmd )
 
-alloc. currently do_nothing.
+reature. currently returns list of $cmd.
+ this method is allowed to be overrided.
 
 =cut
 
-sub alloc {
-    my ($self) = @_;
+sub feature {
+    my ($self, $cmd) = @_;
 
-    goto &{ $self->{mock_override}->{alloc} } if ( exists $self->{mock_override}->{alloc} );
+    goto &{ $self->{mock_override}->{feature} } if ( exists $self->{mock_override}->{feature} );
 
-    return 1;
+    return ($cmd);
 }
 
 =head2 nlst([$dir])
 
-nlst. currently do_nothing.
+nlst.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -684,7 +695,8 @@ sub nlst {
 
 =head2 list([$dir])
 
-list. currently do_nothing.
+list.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -698,7 +710,8 @@ sub list {
 
 =head2 retr($file)
 
-retr. currently do_nothing.
+retr.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -709,6 +722,22 @@ sub retr {
 
     return 1;
 }
+
+=head2 stor($file)
+
+stor.
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub stor {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{stor} } if ( exists $self->{mock_override}->{stor} );
+
+    return 1;
+}
+
 
 =head2 stou($file)
 
@@ -724,23 +753,10 @@ sub stou {
     return 1;
 }
 
-=head2 stor($file)
-
-stor. currently do_nothing.
-
-=cut
-
-sub stor {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{stor} } if ( exists $self->{mock_override}->{stor} );
-
-    return 1;
-}
-
 =head2 appe($file)
 
-appe. currently do_nothing.
+appe.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -752,79 +768,49 @@ sub appe {
     return 1;
 }
 
-=head2 quot($cmd, @args)
+=head2 port($port_no)
 
-quot. currently do_nothing.
+specify data connection to port-mode.
+
+after called this method, mock_connection_mode() returns 'port' and 
+mock_port_no() returns specified $port_no.
+
+this methos is allowed to be overrided.
 
 =cut
 
-sub quot {
-    my ($self) = @_;
+sub port {
+    my ($self, $port_no) = @_;
 
-    goto &{ $self->{mock_override}->{quot} } if ( exists $self->{mock_override}->{quot} );
+    goto &{ $self->{mock_override}->{port} } if ( exists $self->{mock_override}->{port} );
 
-    return 1;
+    $self->{mock_connection_mode} = 'port';
+    $self->{mock_port_no} = $port_no;
 }
 
-=head2 supported($cmd)
+=head2 pasv()
 
-supported. currently do_nothing, and always returns true.
+specify data connection to passive-mode.
+after called this method, mock_connection_mode() returns 'pasv' and
+mock_port_no() returns ''
+
+this methos is allowed to be overrided.
 
 =cut
 
-sub supported {
+sub pasv {
     my ($self) = @_;
 
-    goto &{ $self->{mock_override}->{supported} } if ( exists $self->{mock_override}->{supported} );
+    goto &{ $self->{mock_override}->{pasv} } if ( exists $self->{mock_override}->{pasv} );
 
-    return 1;
-}
-
-=head2 authorize( [$auth, [$resp]] )
-
-authorize. currently do_nothing.
-
-=cut
-
-sub authorize {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{authorize} } if ( exists $self->{mock_override}->{authorize} );
-
-    return 1;
-}
-
-=head2 feature( $cmd )
-
-reature. currently returns list of $cmd.
-
-=cut
-
-sub feature {
-    my ($self, $cmd) = @_;
-
-    goto &{ $self->{mock_override}->{feature} } if ( exists $self->{mock_override}->{feature} );
-
-    return ($cmd);
-}
-
-=head2 restart( $where )
-
-restart. currently do_nothing
-
-=cut
-
-sub restart {
-    my ($self) = @_;
-
-    goto &{ $self->{mock_override}->{restart} } if ( exists $self->{mock_override}->{restart} );
-
-    return 1;
+    $self->{mock_connection_mode} = 'pasv';
+    $self->{mock_port_no} = '';
 }
 
 =head2 pasv_xfer( $src_file, $dest_server, [$dest_file] )
 
-pasv_xfer. currently do_nothing
+pasv_xfer.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -838,7 +824,8 @@ sub pasv_xfer {
 
 =head2 pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )
 
-pasv_xfer_unique. currently do_nothing
+pasv_xfer_unique.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -852,7 +839,8 @@ sub pasv_xfer_unique {
 
 =head2 pasv_wait( $non_pasv_server )
 
-pasv_wait. currently do_nothing
+pasv_wait.
+default implementation is 'do nothing'. this method is allowed to be overrided.
 
 =cut
 
@@ -863,6 +851,72 @@ sub pasv_wait {
 
     return 1;
 }
+
+
+
+=head2 abort()
+
+abort.
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub abort {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{abort} } if ( exists $self->{mock_override}->{abort} );
+
+    return 1;
+}
+
+=head2 quit()
+
+quit.
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub quit {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{quit} } if ( exists $self->{mock_override}->{quit} );
+
+    return 1;
+}
+
+
+
+=head2 quot($cmd, @args)
+
+quot.
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub quot {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{quot} } if ( exists $self->{mock_override}->{quot} );
+
+    return 1;
+}
+
+=head2 close()
+
+close connection mock FTP server.
+default implementation is 'do nothing'. this method is allowed to be overrided.
+
+=cut
+
+sub close {
+    my ($self) = @_;
+
+    goto &{ $self->{mock_override}->{close} } if ( exists $self->{mock_override}->{close} );
+
+    return 1;
+}
+
+
 
 
 sub _remote_dir_for_dir {
@@ -903,6 +957,7 @@ sub _abs_local_file {
 =head2 message()
 
 return messages from mock FTP server
+this method is allowed to be overrided.
 
 =cut
 
