@@ -164,6 +164,7 @@ sub new {
         mock_transfer_mode   => 'ascii',
         mock_connection_mode => $connection_mode,
         mock_port_no         => $port_no,
+        message              => '',
     };
     bless $self, $class;
 }
@@ -222,6 +223,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub authorize {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{authorize} } if ( exists $self->{mock_override}->{authorize} );
 
     return 1;
@@ -237,6 +239,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub site {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{site} } if ( exists $self->{mock_override}->{site} );
 
     return 1;
@@ -253,6 +256,7 @@ this methos is allowed to be overrided.
 sub ascii {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{ascii} } if ( exists $self->{mock_override}->{ascii} );
 
     $self->{mock_transfer_mode} = 'ascii';
@@ -270,6 +274,7 @@ this methos is allowed to be overrided.
 sub binary {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{binary} } if ( exists $self->{mock_override}->{binary} );
 
     $self->{mock_transfer_mode} = 'binary';
@@ -285,6 +290,7 @@ this methos is allowed to be overrided.
 sub rename {
     my ($self, $oldname, $newname) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{rename} } if ( exists $self->{mock_override}->{rename} );
 
     rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname);
@@ -300,6 +306,7 @@ this methos is allowed to be overrided.
 sub delete {
     my ($self, $filename) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{delete} } if ( exists $self->{mock_override}->{delete} );
 
     unlink $self->_abs_remote_file($filename);
@@ -316,6 +323,7 @@ this methos is allowed to be overrided.
 sub cwd {
     my ($self, $dirs) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{cwd} } if ( exists $self->{mock_override}->{cwd} );
 
     if ( !defined $dirs ) {
@@ -342,6 +350,7 @@ this methos is allowed to be overrided.
 sub cdup {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{cdup} } if ( exists $self->{mock_override}->{cdup} );
 
     my $backup_cwd = $self->_mock_cwd;
@@ -359,6 +368,7 @@ this methos is allowed to be overrided.
 sub pwd {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{pwd} } if ( exists $self->{mock_override}->{pwd} );
 
     return catdir($self->{mock_server_root}, $self->_mock_cwd);
@@ -398,6 +408,7 @@ restart. currently do_nothing
 sub restart {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{restart} } if ( exists $self->{mock_override}->{restart} );
 
     return 1;
@@ -413,6 +424,7 @@ this methos is allowed to be overrided.
 sub rmdir {
     my ($self, $dirname, $recursive_bool) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{rmdir} } if ( exists $self->{mock_override}->{rmdir} );
 
     if ( !!$recursive_bool ) {
@@ -434,6 +446,7 @@ this methos is allowed to be overrided.
 sub mkdir {
     my ($self, $dirname, $recursive_bool) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{mkdir} } if ( exists $self->{mock_override}->{mkdir} );
 
     if ( !!$recursive_bool ) {
@@ -454,6 +467,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub alloc {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{alloc} } if ( exists $self->{mock_override}->{alloc} );
 
     return 1;
@@ -469,6 +483,7 @@ this methos is allowed to be overrided.
 sub ls {
     my ($self, $dir) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{ls} } if ( exists $self->{mock_override}->{ls} );
 
     my $target_dir = $self->_remote_dir_for_dir($dir);
@@ -489,6 +504,7 @@ this methos is allowed to be overrided.
 sub dir {
     my ($self, $dir) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{dir} } if ( exists $self->{mock_override}->{dir} );
 
     my $target_dir = $self->_remote_dir_for_dir($dir);
@@ -509,6 +525,7 @@ this methos is allowed to be overrided.
 sub get {
     my($self, $remote_file, $local_file) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{get} } if ( exists $self->{mock_override}->{get} );
 
     $local_file = basename($remote_file) if ( !defined $local_file );
@@ -527,6 +544,7 @@ this methos is allowed to be overrided.
 sub put {
     my ($self, $local_file, $remote_file) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{put} } if ( exists $self->{mock_override}->{put} );
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
@@ -545,6 +563,7 @@ this methos is allowed to be overrided.
 sub put_unique {
     my ($self, $local_file, $remote_file) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{put_unique} } if ( exists $self->{mock_override}->{put_unique} );
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
@@ -579,6 +598,7 @@ this methos is allowed to be overrided.
 sub append {
     my ($self, $local_file, $remote_file) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{append} } if ( exists $self->{mock_override}->{append} );
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
@@ -597,6 +617,8 @@ this methos is allowed to be overrided.
 
 sub unique_name {
     my ($self) = @_;
+
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{unique_name} } if ( exists $self->{mock_override}->{unique_name} );
 
     return $self->{mock_unique_name};
@@ -612,6 +634,7 @@ this methos is allowed to be overrided.
 sub mdtm {
     my ($self, $filename) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{mdtm} } if ( exists $self->{mock_override}->{mdtm} );
 
     return 1;
@@ -627,6 +650,7 @@ this methos is allowed to be overrided.
 sub size {
     my ($self, $filename) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{size} } if ( exists $self->{mock_override}->{size} );
 
     return 1;
@@ -643,6 +667,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub supported {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{supported} } if ( exists $self->{mock_override}->{supported} );
 
     return 1;
@@ -658,6 +683,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub hash {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{hash} } if ( exists $self->{mock_override}->{hash} );
 
     return 1;
@@ -673,6 +699,7 @@ reature. currently returns list of $cmd.
 sub feature {
     my ($self, $cmd) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{feature} } if ( exists $self->{mock_override}->{feature} );
 
     return ($cmd);
@@ -688,6 +715,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub nlst {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{nlst} } if ( exists $self->{mock_override}->{nlst} );
 
     return 1;
@@ -703,6 +731,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub list {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{list} } if ( exists $self->{mock_override}->{list} );
 
     return 1;
@@ -718,6 +747,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub retr {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{retr} } if ( exists $self->{mock_override}->{retr} );
 
     return 1;
@@ -733,6 +763,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub stor {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{stor} } if ( exists $self->{mock_override}->{stor} );
 
     return 1;
@@ -748,6 +779,7 @@ stou. currently do_nothing.
 sub stou {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{stou} } if ( exists $self->{mock_override}->{stou} );
 
     return 1;
@@ -763,6 +795,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub appe {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{appe} } if ( exists $self->{mock_override}->{appe} );
 
     return 1;
@@ -782,6 +815,7 @@ this methos is allowed to be overrided.
 sub port {
     my ($self, $port_no) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{port} } if ( exists $self->{mock_override}->{port} );
 
     $self->{mock_connection_mode} = 'port';
@@ -801,6 +835,7 @@ this methos is allowed to be overrided.
 sub pasv {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{pasv} } if ( exists $self->{mock_override}->{pasv} );
 
     $self->{mock_connection_mode} = 'pasv';
@@ -817,6 +852,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub pasv_xfer {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{pasv_xfer} } if ( exists $self->{mock_override}->{pasv_xfer} );
 
     return 1;
@@ -832,6 +868,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub pasv_xfer_unique {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{pasv_xfer_unique} } if ( exists $self->{mock_override}->{pasv_xfer_unique} );
 
     return 1;
@@ -847,6 +884,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub pasv_wait {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{pasv_wait} } if ( exists $self->{mock_override}->{pasv_wait} );
 
     return 1;
@@ -864,6 +902,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub abort {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{abort} } if ( exists $self->{mock_override}->{abort} );
 
     return 1;
@@ -879,6 +918,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub quit {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{quit} } if ( exists $self->{mock_override}->{quit} );
 
     return 1;
@@ -896,6 +936,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub quot {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{quot} } if ( exists $self->{mock_override}->{quot} );
 
     return 1;
@@ -911,6 +952,7 @@ default implementation is 'do nothing'. this method is allowed to be overrided.
 sub close {
     my ($self) = @_;
 
+    $self->{message} = '';
     goto &{ $self->{mock_override}->{close} } if ( exists $self->{mock_override}->{close} );
 
     return 1;
