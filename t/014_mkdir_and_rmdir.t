@@ -50,5 +50,22 @@ subtest 'error in rmdir', sub {
     done_testing();
 };
 
+subtest 'error in mkdir', sub {
+    remove_tree( catdir('tmp', 'dirX') );
+
+    my $ftp = prepare_ftp();
+
+    ok( !-e catdir($ftp->mock_physical_root, 'dirX' ) );
+
+    $ftp->mkdir('dirX');
+    ok( !$ftp->mkdir('dirX') ); #already exists
+    isnt( $ftp->message, '');
+
+    ok( !$ftp->mkdir('dirX', 1) ); #already exists
+    isnt( $ftp->message, '');
+
+    remove_tree( catdir('tmp', 'dirX') );
+};
+
 
 done_testing();

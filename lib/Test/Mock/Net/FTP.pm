@@ -461,10 +461,16 @@ sub mkdir {
     goto &{ $self->{mock_override}->{mkdir} } if ( exists $self->{mock_override}->{mkdir} );
 
     if ( !!$recursive_bool ) {
-        make_path( $self->_abs_remote_file($dirname) );
+        unless( make_path( $self->_abs_remote_file($dirname) ) ) {
+            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            return;
+        }
     }
     else {
-        mkdir $self->_abs_remote_file($dirname);
+        unless( mkdir $self->_abs_remote_file($dirname) ) {
+            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            return;
+        }
     }
 }
 
