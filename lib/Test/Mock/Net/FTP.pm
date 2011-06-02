@@ -549,8 +549,11 @@ sub get {
     goto &{ $self->{mock_override}->{get} } if ( exists $self->{mock_override}->{get} );
 
     $local_file = basename($remote_file) if ( !defined $local_file );
-    copy( $self->_abs_remote_file($remote_file),
-          $self->_abs_local_file($local_file)   ) || croak "can't get $remote_file\n";
+    unless( copy( $self->_abs_remote_file($remote_file),
+                  $self->_abs_local_file($local_file) )   ) {
+        $self->{message} = sprintf("%s: %s", $remote_file, $!);
+        return;
+    }
 
     return $local_file;
 }
