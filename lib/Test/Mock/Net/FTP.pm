@@ -294,7 +294,7 @@ sub rename {
     goto &{ $self->{mock_override}->{rename} } if ( exists $self->{mock_override}->{rename} );
 
     unless( rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname) ) {
-        $self->{message} = sprintf("%s : %s\n", $oldname, $!);
+        $self->{message} = sprintf("%s: %s\n", $oldname, $!);
         return;
     }
 
@@ -315,7 +315,7 @@ sub delete {
     goto &{ $self->{mock_override}->{delete} } if ( exists $self->{mock_override}->{delete} );
 
     unless( unlink $self->_abs_remote_file($filename) ) {
-        $self->{message} = sprintf("%s : %s\n", $filename, $!);
+        $self->{message} = sprintf("%s: %s\n", $filename, $!);
         return;
     }
 }
@@ -437,13 +437,13 @@ sub rmdir {
 
     if ( !!$recursive_bool ) {
         unless( remove_tree( $self->_abs_remote_file($dirname) ) ) {
-            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
     }
     else {
         unless( rmdir $self->_abs_remote_file($dirname) ) {
-            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
     }
@@ -465,13 +465,13 @@ sub mkdir {
 
     if ( !!$recursive_bool ) {
         unless( make_path( $self->_abs_remote_file($dirname) ) ) {
-            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
     }
     else {
         unless( mkdir $self->_abs_remote_file($dirname) ) {
-            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
     }
