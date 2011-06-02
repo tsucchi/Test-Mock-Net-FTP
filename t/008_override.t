@@ -47,22 +47,7 @@ subtest 'pwd', sub {
 };
 
 subtest 'other methods', sub {
-    my @methods = (
-        'unique_name',      'size',       'mdtm',
-        'message',          'cwd',        'cdup',
-        'put',              'append',     'put_unique',
-        'get',              'rename',     'delete',
-        'mkdir',            'rmdir',      'port',
-        'pasv',             'binary',     'ascii',
-        'quit',             'close',      'abort',
-        'site',             'hash',       'alloc',
-        'nlst',             'list',       'retr',
-        'stou',             'stor',       'appe',
-        'quot',             'supported',  'authorize',
-        'feature',          'restart',    'pasv_xfer',
-        'pasv_xfer_unique', 'pasv_wait',  'ls',
-        'dir',              'pwd',
-    );
+    my @methods = all_methods_in_net_ftp();
 
     for my $method ( @methods ) {
         my $called_method = "";
