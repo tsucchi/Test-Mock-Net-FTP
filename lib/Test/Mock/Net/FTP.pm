@@ -551,6 +551,8 @@ sub get {
     $local_file = basename($remote_file) if ( !defined $local_file );
     copy( $self->_abs_remote_file($remote_file),
           $self->_abs_local_file($local_file)   ) || croak "can't get $remote_file\n";
+
+    return $local_file;
 }
 
 
@@ -569,7 +571,7 @@ sub put {
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
     unless ( copy( $self->_abs_local_file($local_file),
-             $self->_abs_remote_file($remote_file) ) ) {
+                   $self->_abs_remote_file($remote_file) ) ) {
         carp "Cannot open Local file $remote_file: $!";
         return undef;
     }

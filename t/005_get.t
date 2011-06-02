@@ -17,7 +17,7 @@ subtest 'get', sub {
     chdir 'tmp';
 
     $ftp->cwd('dir1');
-    $ftp->get( 'data1.txt' );
+    is( $ftp->get( 'data1.txt' ), 'data1.txt' );
     file_contents_ok('data1.txt', "this is testdata #1\n");
     unlink( 'data1.txt' );
 
@@ -51,6 +51,19 @@ subtest 'absolute path and local filename', sub {
     chdir $cwd;
     done_testing();
 };
+
+# subtest 'error', sub {
+#     my $ftp = prepare_ftp();
+#     my $cwd = getcwd();
+#     chdir 'tmp';
+
+#     $ftp->cwd();
+#     $ftp->get( 'no_exist.txt');
+
+
+#     chdir $cwd;
+#     done_testing();
+# };
 
 
 
