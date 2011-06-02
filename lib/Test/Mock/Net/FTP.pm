@@ -631,7 +631,11 @@ sub append {
     goto &{ $self->{mock_override}->{append} } if ( exists $self->{mock_override}->{append} );
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
-    my $local_contents = read_file( $self->_abs_local_file($local_file) );
+    my $local_contents = eval { read_file( $self->_abs_local_file($local_file) ) };
+    if ( $@ ) {
+        carp "Cannot open Local file $remote_file: $!";
+        return;
+    }
     write_file( $self->_abs_remote_file($remote_file), { append => 1 }, $local_contents);
 }
 

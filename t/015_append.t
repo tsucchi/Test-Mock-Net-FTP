@@ -7,6 +7,7 @@ use t::Util;
 use Test::Mock::Net::FTP;
 use Cwd;
 use File::Copy;
+use Capture::Tiny qw(capture);
 
 my $data = catfile('t', 'testdata', 'data1.txt');
 
@@ -77,6 +78,18 @@ subtest 'specify absolute path', sub {
     done_testing();
 };
 
+subtest 'error', sub {
+    my $ftp = prepare_ftp();
+
+    $ftp->cwd('dir1');
+    my $ret;
+    my ($stdout, $stderr) = capture {
+        $ret = $ftp->append('no_exist_file.txt');
+    };
+    like( $stderr, qr/\ACannot open Local file no_exist_file\.txt:/ms);
+    is( $ret, undef);
+    done_testing();
+};
 
 
 done_testing();
