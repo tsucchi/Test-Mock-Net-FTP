@@ -568,8 +568,11 @@ sub put {
     goto &{ $self->{mock_override}->{put} } if ( exists $self->{mock_override}->{put} );
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
-    copy( $self->_abs_local_file($local_file),
-          $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
+    unless ( copy( $self->_abs_local_file($local_file),
+             $self->_abs_remote_file($remote_file) ) ) {
+        carp "Cannot open Local file $remote_file: $!";
+        return undef;
+    }
 
     return $remote_file;
 }
@@ -591,8 +594,12 @@ sub put_unique {
     $remote_file = basename($local_file) if ( !defined $remote_file );
 
     my $newfile = $self->_unique_new_name($remote_file);
-    copy( $self->_abs_local_file($local_file),
-          $self->_abs_remote_file($newfile) ) || croak "can't put $local_file to $remote_file\n";
+    unless ( copy( $self->_abs_local_file($local_file),
+                   $self->_abs_remote_file($newfile) ) ) {
+        carp "Cannot open Local file $remote_file: $!";
+        $self->{mock_unique_name} = undef;
+        return undef;
+    }
     $self->{mock_unique_name} = $newfile;
 }
 

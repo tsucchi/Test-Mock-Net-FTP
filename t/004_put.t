@@ -6,6 +6,7 @@ use File::Spec::Functions qw(catfile catdir rootdir);
 use t::Util;
 use Test::Mock::Net::FTP;
 use Cwd;
+use Capture::Tiny qw(capture);
 
 my $data = catfile('t', 'testdata', 'data1.txt');
 
@@ -83,14 +84,32 @@ subtest 'put_unique', sub {
     done_testing();
 };
 
-# subtest 'error in put', sub {
-#     my $ftp = prepare_ftp();
+subtest 'error in put', sub {
+    my $ftp = prepare_ftp();
 
-#     $ftp->cwd('dir1');
-#     $ftp->put('no_exist_file.txt');
+    $ftp->cwd('dir1');
+    my $ret;
+    my ($stdout, $stderr) = capture {
+        $ret = $ftp->put('no_exist_file.txt');
+    };
+    like( $stderr, qr/\ACannot open Local file no_exist_file\.txt:/ms);
+    is( $ret, undef);
+    done_testing();
+};
 
-#     done_testing();
-# };
+subtest 'error in put_unique', sub {
+    my $ftp = prepare_ftp();
+
+    $ftp->cwd('dir1');
+    my $ret;
+    my ($stdout, $stderr) = capture {
+        $ret = $ftp->put_unique('no_exist_file.txt');
+    };
+    like( $stderr, qr/\ACannot open Local file no_exist_file\.txt:/ms);
+    is( $ret, undef);
+    is( $ftp->unique_name(), undef);
+    done_testing();
+};
 
 
 done_testing();
