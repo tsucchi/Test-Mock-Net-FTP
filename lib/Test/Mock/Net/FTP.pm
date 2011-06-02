@@ -570,6 +570,8 @@ sub put {
     $remote_file = basename($local_file) if ( !defined $remote_file );
     copy( $self->_abs_local_file($local_file),
           $self->_abs_remote_file($remote_file) ) || croak "can't put $local_file to $remote_file\n";
+
+    return $remote_file;
 }
 
 =head2 put_unique($local_file, [$remote_file])

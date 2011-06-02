@@ -13,7 +13,7 @@ subtest 'default put', sub {
     my $ftp = prepare_ftp();
 
     $ftp->cwd('dir1');
-    $ftp->put($data);
+    is( $ftp->put($data), 'data1.txt' );
 
     my $put_file = catfile($ftp->mock_physical_root, 'dir1', 'data1.txt');
     file_contents_ok($put_file, "this is testdata #1\n");
@@ -82,6 +82,15 @@ subtest 'put_unique', sub {
 
     done_testing();
 };
+
+# subtest 'error in put', sub {
+#     my $ftp = prepare_ftp();
+
+#     $ftp->cwd('dir1');
+#     $ftp->put('no_exist_file.txt');
+
+#     done_testing();
+# };
 
 
 done_testing();
