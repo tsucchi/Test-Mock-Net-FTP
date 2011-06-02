@@ -293,7 +293,12 @@ sub rename {
     $self->{message} = '';
     goto &{ $self->{mock_override}->{rename} } if ( exists $self->{mock_override}->{rename} );
 
-    rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname);
+    unless( rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname) ) {
+        $self->{message} = sprintf("%s : %s\n", $oldname, $!);
+        return;
+    }
+
+    return 1;
 }
 
 =head2 delete($filename)
