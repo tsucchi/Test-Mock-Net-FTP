@@ -52,18 +52,18 @@ subtest 'absolute path and local filename', sub {
     done_testing();
 };
 
-# subtest 'error', sub {
-#     my $ftp = prepare_ftp();
-#     my $cwd = getcwd();
-#     chdir 'tmp';
+subtest 'error', sub {
+    my $ftp = prepare_ftp();
+    my $cwd = getcwd();
+    chdir 'tmp';
 
-#     $ftp->cwd();
-#     $ftp->get( 'no_exist.txt');
+    $ftp->cwd();
+    is( $ftp->get('no_exist.txt'), undef );
+    isnt( $ftp->message, '');
 
-
-#     chdir $cwd;
-#     done_testing();
-# };
+    chdir $cwd;
+    done_testing();
+};
 
 
 
