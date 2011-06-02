@@ -314,7 +314,10 @@ sub delete {
     $self->{message} = '';
     goto &{ $self->{mock_override}->{delete} } if ( exists $self->{mock_override}->{delete} );
 
-    unlink $self->_abs_remote_file($filename);
+    unless( unlink $self->_abs_remote_file($filename) ) {
+        $self->{message} = sprintf("%s : %s\n", $filename, $!);
+        return;
+    }
 }
 
 
