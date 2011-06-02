@@ -576,7 +576,7 @@ sub put {
     unless ( copy( $self->_abs_local_file($local_file),
                    $self->_abs_remote_file($remote_file) ) ) {
         carp "Cannot open Local file $remote_file: $!";
-        return undef;
+        return;
     }
 
     return $remote_file;
@@ -603,7 +603,7 @@ sub put_unique {
                    $self->_abs_remote_file($newfile) ) ) {
         carp "Cannot open Local file $remote_file: $!";
         $self->{mock_unique_name} = undef;
-        return undef;
+        return;
     }
     $self->{mock_unique_name} = $newfile;
 }
