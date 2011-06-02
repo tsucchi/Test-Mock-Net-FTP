@@ -433,10 +433,16 @@ sub rmdir {
     goto &{ $self->{mock_override}->{rmdir} } if ( exists $self->{mock_override}->{rmdir} );
 
     if ( !!$recursive_bool ) {
-        remove_tree( $self->_abs_remote_file($dirname) );
+        unless( remove_tree( $self->_abs_remote_file($dirname) ) ) {
+            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            return;
+        }
     }
     else {
-        rmdir $self->_abs_remote_file($dirname);
+        unless( rmdir $self->_abs_remote_file($dirname) ) {
+            $self->{message} = sprintf("%s : %s", $dirname, $!);
+            return;
+        }
     }
 }
 

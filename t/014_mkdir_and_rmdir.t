@@ -14,10 +14,10 @@ subtest 'mkdir and rmdir', sub {
 
     ok( !-e catdir($ftp->mock_physical_root, 'dirX' ) );
 
-    $ftp->mkdir('dirX');
+    ok( $ftp->mkdir('dirX') );
     ok( -e catdir($ftp->mock_physical_root, 'dirX' ) );
 
-    $ftp->rmdir('dirX');
+    ok( $ftp->rmdir('dirX') );
     ok( !-e catdir($ftp->mock_physical_root, 'dirX' ) );
 
     remove_tree( catdir('tmp', 'dirX') );
@@ -29,13 +29,25 @@ subtest 'mkdir and rmdir recursive', sub {
     my $ftp = prepare_ftp();
 
     ok( !-e catdir($ftp->mock_physical_root, 'dirX', 'dirY', 'dirZ' ) );
-    $ftp->mkdir('dirX/dirY/dirZ', 1);
+    ok( $ftp->mkdir('dirX/dirY/dirZ', 1) );
     ok( -e catdir($ftp->mock_physical_root, 'dirX', 'dirY', 'dirZ' ) );
 
-    $ftp->rmdir('dirX', 1);
+    ok( $ftp->rmdir('dirX', 1) );
     ok( !-e catdir($ftp->mock_physical_root, 'dirX', 'dirY', 'dirZ' ) );
 
     remove_tree( catdir('tmp', 'dirX') );
+};
+
+subtest 'error in rmdir', sub {
+    my $ftp = prepare_ftp();
+
+    ok( !$ftp->rmdir('no_exist_dir') );
+    isnt( $ftp->message, '');
+
+    ok( !$ftp->rmdir('no_exist_dir', 1) );
+    isnt( $ftp->message, '');
+
+    done_testing();
 };
 
 
