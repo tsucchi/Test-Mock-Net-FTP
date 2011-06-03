@@ -331,7 +331,7 @@ default implementation for rename. this method sholud be used in overridden meth
 
 sub mock_default_rename {
     my ($self, $oldname, $newname) = @_;
-    unless( CORE::rename $self->_abs_remote_file($oldname), $self->_abs_remote_file($newname) ) {
+    unless( CORE::rename $self->_abs_remote($oldname), $self->_abs_remote($newname) ) {
         $self->{message} = sprintf("%s: %s\n", $oldname, $!);
         return;
     }
@@ -354,7 +354,7 @@ default implementation for delete. this method sholud be used in overridden meth
 sub mock_default_delete {
     my ($self, $filename) = @_;
 
-    unless( unlink $self->_abs_remote_file($filename) ) {
+    unless( unlink $self->_abs_remote($filename) ) {
         $self->{message} = sprintf("%s: %s\n", $filename, $!);
         return;
     }
@@ -489,13 +489,13 @@ default implementation for rmdir. this method sholud be used in overridden metho
 sub mock_default_rmdir {
     my ($self, $dirname, $recursive_bool) = @_;
     if ( !!$recursive_bool ) {
-        unless( remove_tree( $self->_abs_remote_file($dirname) ) ) {
+        unless( remove_tree( $self->_abs_remote($dirname) ) ) {
             $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
     }
     else {
-        unless( CORE::rmdir $self->_abs_remote_file($dirname) ) {
+        unless( CORE::rmdir $self->_abs_remote($dirname) ) {
             $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
@@ -519,13 +519,13 @@ default implementation for mkdir. this method sholud be used in overridden metho
 sub mock_default_mkdir {
     my ($self, $dirname, $recursive_bool) = @_;
     if ( !!$recursive_bool ) {
-        unless( make_path( $self->_abs_remote_file($dirname) ) ) {
+        unless( make_path( $self->_abs_remote($dirname) ) ) {
             $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
     }
     else {
-        unless( CORE::mkdir $self->_abs_remote_file($dirname) ) {
+        unless( CORE::mkdir $self->_abs_remote($dirname) ) {
             $self->{message} = sprintf("%s: %s", $dirname, $!);
             return;
         }
@@ -617,8 +617,8 @@ default implementation for get. this method sholud be used in overridden method.
 sub mock_default_get {
     my($self, $remote_file, $local_file) = @_;
     $local_file = basename($remote_file) if ( !defined $local_file );
-    unless( copy( $self->_abs_remote_file($remote_file),
-                  $self->_abs_local_file($local_file) )   ) {
+    unless( copy( $self->_abs_remote($remote_file),
+                  $self->_abs_local($local_file) )   ) {
         $self->{message} = sprintf("%s: %s", $remote_file, $!);
         return;
     }
@@ -644,8 +644,8 @@ default implementation for put. this method sholud be used in overridden method.
 sub mock_default_put {
     my ($self, $local_file, $remote_file) = @_;
     $remote_file = basename($local_file) if ( !defined $remote_file );
-    unless ( copy( $self->_abs_local_file($local_file),
-                   $self->_abs_remote_file($remote_file) ) ) {
+    unless ( copy( $self->_abs_local($local_file),
+                   $self->_abs_remote($remote_file) ) ) {
         carp "Cannot open Local file $remote_file: $!";
         return;
     }
@@ -668,7 +668,7 @@ sub _unique_new_name {
     my $suffix = "";
     my $newfile = $remote_file;
     for ( my $i=1; $i<=1024; $i++ ) {
-        last if ( !-e $self->_abs_remote_file($newfile) );
+        last if ( !-e $self->_abs_remote($newfile) );
         $suffix = ".$i";
         $newfile = $remote_file . $suffix;
     }
@@ -686,8 +686,8 @@ sub mock_default_put_unique {
     $remote_file = basename($local_file) if ( !defined $remote_file );
 
     my $newfile = $self->_unique_new_name($remote_file);
-    unless ( copy( $self->_abs_local_file($local_file),
-                   $self->_abs_remote_file($newfile) ) ) {
+    unless ( copy( $self->_abs_local($local_file),
+                   $self->_abs_remote($newfile) ) ) {
         carp "Cannot open Local file $remote_file: $!";
         $self->{mock_unique_name} = undef;
         return;
@@ -714,12 +714,12 @@ sub mock_default_append {
     my ($self, $local_file, $remote_file) = @_;
 
     $remote_file = basename($local_file) if ( !defined $remote_file );
-    my $local_contents = eval { read_file( $self->_abs_local_file($local_file) ) };
+    my $local_contents = eval { read_file( $self->_abs_local($local_file) ) };
     if ( $@ ) {
         carp "Cannot open Local file $remote_file: $!";
         return;
     }
-    write_file( $self->_abs_remote_file($remote_file), { append => 1 }, $local_contents);
+    write_file( $self->_abs_remote($remote_file), { append => 1 }, $local_contents);
 }
 
 =head2 unique_name()
@@ -757,7 +757,7 @@ default implementation for mdtm. this method sholud be used in overridden method
 
 sub mock_default_mdtm {
     my ($self, $filename) = @_;
-    my $mdtm = ( stat $self->_abs_remote_file($filename) )[9];
+    my $mdtm = ( stat $self->_abs_remote($filename) )[9];
     return $mdtm;
 }
 
@@ -777,7 +777,7 @@ default implementation for size. this method sholud be used in overridden method
 
 sub mock_default_size {
     my ($self, $filename) = @_;
-    my $size = ( stat $self->_abs_remote_file($filename) )[7];
+    my $size = ( stat $self->_abs_remote($filename) )[7];
     return $size;
 }
 
@@ -1148,12 +1148,12 @@ sub _remote_dir_for_dir {
 sub _remote_dir_for_file {
     my ($self, $remote_file) = @_;
 
-    my $remote_dir = dirname( $remote_file ) eq curdir() ? $self->{mock_cwd} : dirname( $remote_file ) ;
+    my $remote_dir = dirname($remote_file) eq curdir() ? $self->{mock_cwd} : dirname($remote_file) ;
     $remote_dir =~ s/^$self->{mock_server_root}// if ( $remote_file =~ /^$self->{mock_server_root}/ );
     return $remote_dir;
 }
 
-sub _abs_remote_file {
+sub _abs_remote {
     my ($self, $remote_file) = @_;
 
     my $remote_dir = $self->_remote_dir_for_file($remote_file);
@@ -1161,7 +1161,7 @@ sub _abs_remote_file {
     return catfile($self->{mock_physical_root}, $remote_dir, basename($remote_file))
 }
 
-sub _abs_local_file {
+sub _abs_local {
     my ($self, $local_file) = @_;
 
     my $root = rootdir();
