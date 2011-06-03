@@ -744,7 +744,7 @@ sub mock_default_unique_name {
 
 =head2 mdtm( $file )
 
-returns file modification time in remote (mock) server. but currently always return 1
+returns file modification time in remote (mock) server.
 this methos is allowed to be overridden.
 
 =cut
@@ -757,7 +757,8 @@ default implementation for mdtm. this method sholud be used in overridden method
 
 sub mock_default_mdtm {
     my ($self, $filename) = @_;
-    return 1;
+    my $mdtm = ( stat $self->_abs_remote_file($filename) )[9];
+    return $mdtm;
 }
 
 =head2 size( $file )

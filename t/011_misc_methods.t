@@ -176,9 +176,12 @@ subtest 'size', sub {
 
 subtest 'mdtm', sub {
     my $ftp = prepare_ftp();
-    copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) );
+    my $dest = catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) ;
+    copy( catfile('t', 'testdata', 'data1.txt'), $dest);
+
+    my $expected_mdtm = ( stat $dest )[9];
     $ftp->cwd('dir1');
-    ok( $ftp->mdtm("data1.txt") );
+    is( $ftp->mdtm("data1.txt"), $expected_mdtm );
     unlink catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' );
     done_testing();
 };
