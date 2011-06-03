@@ -1154,22 +1154,20 @@ sub _remote_dir_for_file {
 }
 
 sub _abs_remote {
-    my ($self, $remote_file) = @_;
+    my ($self, $remote_path) = @_;
 
-    my $remote_dir = $self->_remote_dir_for_file($remote_file);
-    $remote_dir = "" if !defined $remote_dir;
-    return catfile($self->{mock_physical_root}, $remote_dir, basename($remote_file))
+    my $remote_dir = $self->_remote_dir_for_file($remote_path);
+    return catfile($self->{mock_physical_root}, $remote_dir, basename($remote_path))
 }
 
 sub _abs_local {
-    my ($self, $local_file) = @_;
+    my ($self, $local_path) = @_;
 
     my $root = rootdir();
-    return $local_file if ( $local_file =~ m{^$root} );
+    return $local_path if ( $local_path =~ m{^$root} );
 
-    my $local_dir = dirname( $local_file ) eq curdir() ? getcwd() : dirname( $local_file );
-    $local_dir = "" if !defined $local_dir;
-    return catfile($local_dir, basename($local_file));
+    my $local_dir = dirname($local_path) eq curdir() ? getcwd() : dirname($local_path);
+    return catfile($local_dir, basename($local_path));
 }
 
 =head2 message()
