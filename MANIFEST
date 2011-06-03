@@ -30,6 +30,7 @@ t/014_mkdir_and_rmdir.t
 t/015_append.t
 t/016_clear_message.t
 t/017_command_history.t
+t/018_default_implementation.t
 t/perlcriticrc
 t/testdata/data1.txt
 t/Util.pm
