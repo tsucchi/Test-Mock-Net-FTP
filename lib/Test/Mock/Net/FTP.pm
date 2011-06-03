@@ -29,26 +29,6 @@ Test::Mock::Net::FTP - Mock Object for Net::FTP
           'user1'=> {
               password => 'secret',
               dir      => ['./ftpserver', '/ftproot'],
-          },
-      }
-  );
-  my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
-  $ftp->login('user1', 'secret');
-  $ftp->cwd('datadir');
-  $ftp->get('file1');
-  $ftp->quit();
-  # or
-  use Test::Mock::Net::FTP qw(intercept);
-  some_method_using_ftp();
-  # or
-  use Test::More;
-  use Test::Mock::Net::FTP;
-
-  Test::Mock::Net::FTP::mock_prepare(
-      'somehost.example.com' => {
-          'user1'=> {
-              password => 'secret',
-              dir      => ['./ftpserver', '/ftproot'],
               override => { 
                   ls => sub {
                       return qw(aaa bbb ccc);
@@ -59,7 +39,13 @@ Test::Mock::Net::FTP - Mock Object for Net::FTP
   );
   my $ftp = Test::Mock::Net::FTP->new('somehost.example.com');
   $ftp->login('user1', 'secret');
+  $ftp->cwd('datadir');
+  $ftp->get('file1');
   my @files = $ftp->ls();# => ('aaa', 'bbb', 'ccc');
+  $ftp->quit();
+  # or
+  use Test::Mock::Net::FTP qw(intercept);
+  some_method_using_ftp();
 
 =head1 DESCRIPTION
 
