@@ -568,7 +568,7 @@ default implementation for ls. this method sholud be used in overridden method.
 sub mock_default_ls {
     my ($self, $dir) = @_;
 
-    my $target_dir = $self->_remote_dir_for_dir($dir);
+    my $target_dir = $self->_relative_remote($dir);
     my @ls = split(/\n/, `ls $target_dir`);
     my @result =  (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
 
@@ -592,7 +592,7 @@ default implementation for dir. this method sholud be used in overridden method.
 
 sub mock_default_dir {
     my ($self, $dir) = @_;
-    my $target_dir = $self->_remote_dir_for_dir($dir);
+    my $target_dir = $self->_relative_remote($dir);
     my @dir = split(/\n/, `ls -l $target_dir`);
     shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
 
@@ -1137,13 +1137,18 @@ sub mock_default_close {
 }
 
 
-sub _remote_dir_for_dir {
-    my ($self, $dir) = @_;
 
-    $dir =~ s/^$self->{mock_server_root}// if (defined $dir && $dir =~ /^$self->{mock_server_root}/ ); #absolute path
-    $dir = "" if !defined $dir;
-    return catdir($self->mock_pwd, $dir);
+sub _relative_remote {
+    my ($self, $path) = @_;
+
+    if (defined $path && $path =~ /^$self->{mock_server_root}/ ) { #absolute path
+        $path =~ s/^$self->{mock_server_root}//;
+    }
+
+    return $self->mock_pwd if !defined $path;
+    return catdir($self->mock_pwd, $path);
 }
+
 
 sub _remote_dir_for_file {
     my ($self, $remote_file) = @_;
