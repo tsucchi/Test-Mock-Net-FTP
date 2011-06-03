@@ -203,7 +203,7 @@ sub _connection_mode_and_port_no {
 
 =head2 login($user, $password)
 
-login mock FTP server. this method IS NOT allowed to be overrided.
+login mock FTP server. this method IS NOT allowed to be overridden.
 
 =cut
 
@@ -240,7 +240,7 @@ sub _mock_login_auth {
 =head2 authorize( [$auth, [$resp]] )
 
 authorize.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -257,7 +257,7 @@ sub authorize {
 =head2 site(@args)
 
 execute SITE command. 
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -275,7 +275,7 @@ sub site {
 
 enter ascii mode.
 mock_transfer_mode() returns 'ascii'.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -294,7 +294,7 @@ sub ascii {
 
 enter binary mode.
 mock_transfer_mode() returns 'binary'.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -311,7 +311,7 @@ sub binary {
 =head2 rename($oldname, $newname)
 
 rename remote file.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -333,7 +333,7 @@ sub rename {
 =head2 delete($filename)
 
 delete remote file.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -354,7 +354,7 @@ sub delete {
 =head2 cwd($dir)
 
 change (mock) server current directory
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -382,7 +382,7 @@ sub cwd {
 =head2 cdup()
 
 change (mock) server directory to parent
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -401,7 +401,7 @@ sub cdup {
 =head2 pwd()
 
 return (mock) server current directory
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -459,7 +459,7 @@ sub restart {
 =head2 rmdir($dirname, $recursive_bool)
 
 rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively removed.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -488,7 +488,7 @@ sub rmdir {
 =head2 mkdir($dirname, $recursive_bool)
 
 mkdir to remove (mock) server. when $recursive_bool is true, dir is recursively create.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -516,7 +516,7 @@ sub mkdir {
 =head2 alloc($size, [$record_size])
 
 alloc. 
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -533,7 +533,7 @@ sub alloc {
 =head2 ls($dir)
 
 list file(s) in server directory.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -555,7 +555,7 @@ sub ls {
 =head2 dir($dir)
 
 list file(s) with detail information(ex. filesize) in server directory.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -577,7 +577,7 @@ sub dir {
 =head2 get($remote_file, [$local_file])
 
 get file from mock FTP server
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -602,7 +602,7 @@ sub get {
 =head2 put($local_file, [$remote_file])
 
 put a file to mock FTP server
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -627,7 +627,7 @@ sub put {
 
 same as put() but if same file exists in server. rename to unique filename
 (in this module, simply add suffix .1(.2, .3...). and suffix is limited to 1024)
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -667,7 +667,7 @@ sub _unique_new_name {
 =head2 append($local_file, [$remote_file])
 
 put a file to mock FTP server. if file already exists, append file contents in server file.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -692,7 +692,7 @@ sub append {
 =head2 unique_name()
 
 return unique filename when put_unique() called.
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -709,7 +709,7 @@ sub unique_name {
 =head2 mdtm($file)
 
 returns file modification time in remote (mock) server. but currently always return 1
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -726,7 +726,7 @@ sub mdtm {
 =head2 size($file)
 
 returns filesize in remote (mock) server. but currently always return 1
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -744,7 +744,7 @@ sub size {
 =head2 supported($cmd)
 
 supported. 
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -761,7 +761,7 @@ sub supported {
 =head2 hash([$filehandle_glob_ref], [$bytes_per_hash_mark])
 
 hash.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -778,7 +778,7 @@ sub hash {
 =head2 feature( $cmd )
 
 reature. currently returns list of $cmd.
- this method is allowed to be overrided.
+ this method is allowed to be overridden.
 
 =cut
 
@@ -795,7 +795,7 @@ sub feature {
 =head2 nlst([$dir])
 
 nlst.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -812,7 +812,7 @@ sub nlst {
 =head2 list([$dir])
 
 list.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -829,7 +829,7 @@ sub list {
 =head2 retr($file)
 
 retr.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -846,7 +846,7 @@ sub retr {
 =head2 stor($file)
 
 stor.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -880,7 +880,7 @@ sub stou {
 =head2 appe($file)
 
 appe.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -901,7 +901,7 @@ specify data connection to port-mode.
 after called this method, mock_connection_mode() returns 'port' and 
 mock_port_no() returns specified $port_no.
 
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -922,7 +922,7 @@ specify data connection to passive-mode.
 after called this method, mock_connection_mode() returns 'pasv' and
 mock_port_no() returns ''
 
-this methos is allowed to be overrided.
+this methos is allowed to be overridden.
 
 =cut
 
@@ -940,7 +940,7 @@ sub pasv {
 =head2 pasv_xfer( $src_file, $dest_server, [$dest_file] )
 
 pasv_xfer.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -957,7 +957,7 @@ sub pasv_xfer {
 =head2 pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )
 
 pasv_xfer_unique.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -974,7 +974,7 @@ sub pasv_xfer_unique {
 =head2 pasv_wait( $non_pasv_server )
 
 pasv_wait.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -993,7 +993,7 @@ sub pasv_wait {
 =head2 abort()
 
 abort.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -1010,7 +1010,7 @@ sub abort {
 =head2 quit()
 
 quit.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -1029,7 +1029,7 @@ sub quit {
 =head2 quot($cmd, @args)
 
 quot.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -1046,7 +1046,7 @@ sub quot {
 =head2 close()
 
 close connection mock FTP server.
-default implementation is 'do nothing'. this method is allowed to be overrided.
+default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
@@ -1101,7 +1101,7 @@ sub _abs_local_file {
 =head2 message()
 
 return messages from mock FTP server
-this method is allowed to be overrided.
+this method is allowed to be overridden.
 
 =cut
 
