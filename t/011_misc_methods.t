@@ -169,7 +169,7 @@ subtest 'size', sub {
     my $ftp = prepare_ftp();
     copy( catfile('t', 'testdata', 'data1.txt'), catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' ) );
     $ftp->cwd('dir1');
-    ok( $ftp->size("data1.txt") );
+    is( $ftp->size("data1.txt"), 20 );
     unlink catfile('tmp', 'ftpserver', 'dir1', 'data1.txt' );
     done_testing();
 };

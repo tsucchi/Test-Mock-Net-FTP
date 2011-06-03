@@ -762,7 +762,7 @@ sub mock_default_mdtm {
 
 =head2 size( $file )
 
-returns filesize in remote (mock) server. but currently always return 1
+returns filesize in remote (mock) server.
 this methos is allowed to be overridden.
 
 =cut
@@ -776,8 +776,8 @@ default implementation for size. this method sholud be used in overridden method
 
 sub mock_default_size {
     my ($self, $filename) = @_;
-
-    return 1;
+    my $size = ( stat $self->_abs_remote_file($filename) )[7];
+    return $size;
 }
 
 =head2 supported( $cmd )
