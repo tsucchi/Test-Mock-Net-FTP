@@ -20,6 +20,7 @@ t/004_put.t
 t/005_get.t
 t/006_intercept_put.t
 t/007_intercept_get.t
+t/008_override.t
 t/009_ls.t
 t/010_dir.t
 t/011_misc_methods.t
@@ -27,6 +28,7 @@ t/012_rename.t
 t/013_delete.t
 t/014_mkdir_and_rmdir.t
 t/015_append.t
+t/016_clear_message.t
 t/perlcriticrc
 t/testdata/data1.txt
 t/Util.pm
