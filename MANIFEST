@@ -34,6 +34,7 @@ t/018_default_implementation.t
 t/perlcriticrc
 t/testdata/data1.txt
 t/Util.pm
+xt/manifest.t
 xt/module_used.t
 xt/perlcritic.t
 xt/perlcriticrc

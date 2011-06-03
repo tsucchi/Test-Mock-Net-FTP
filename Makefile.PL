@@ -18,6 +18,7 @@ author_requires 'Test::Synopsis';
 author_requires 'Test::Pod';
 author_requires 'Test::Pod::Coverage';
 author_requires 'Test::Module::Used' => '0.1.4';
+author_requires 'Test::CheckManifest';
 
 no_index        'directory' => 'tmp';
 repository      'http://github.com/tsucchi/Test-Mock-Net-FTP';
