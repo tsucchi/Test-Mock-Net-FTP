@@ -60,7 +60,7 @@ my $cwd_when_prepared;
 
 =cut
 
-=head2 mock_prepare(%params)
+=head2 mock_prepare( %params )
 
 prepare FTP server in your local filesystem.
 
@@ -167,7 +167,7 @@ sub mock_clear_command_history {
 }
 
 
-=head2 new($host, %options)
+=head2 new( $host, %options )
 
 create new instance
 
@@ -201,7 +201,7 @@ sub _connection_mode_and_port_no {
     return ($connection_mode, $port_no);
 }
 
-=head2 login($user, $password)
+=head2 login( $user, $password )
 
 login mock FTP server. this method IS NOT allowed to be overridden.
 
@@ -254,7 +254,7 @@ sub authorize {
     return $self->mock_default_authorize($auth, $resp);
 }
 
-=head2 mock_default_authorize(  [$auth, [$resp]]  )
+=head2 mock_default_authorize( [$auth, [$resp]] )
 
 default implementation for authorize. this method sholud be used in overridden method.
 
@@ -265,7 +265,7 @@ sub mock_default_authorize {
     return 1;
 }
 
-=head2 site(@args)
+=head2 site( @args )
 
 execute SITE command. 
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -282,7 +282,7 @@ sub site {
     return $self->mock_default_site(@args);
 }
 
-=head2 mock_default_site(@args)
+=head2 mock_default_site( @args )
 
 default implementation for site. this method sholud be used in overridden method.
 
@@ -382,7 +382,7 @@ sub mock_default_rename {
     }
 }
 
-=head2 delete($filename)
+=head2 delete( $filename )
 
 delete remote file.
 this methos is allowed to be overridden.
@@ -399,7 +399,7 @@ sub delete {
     return $self->mock_default_delete($filename);
 }
 
-=head2 mock_default_delete($filename)
+=head2 mock_default_delete( $filename )
 
 default implementation for delete. this method sholud be used in overridden method.
 
@@ -414,7 +414,7 @@ sub mock_default_delete {
     }
 }
 
-=head2 cwd($dir)
+=head2 cwd( $dir )
 
 change (mock) server current directory
 this methos is allowed to be overridden.
@@ -432,7 +432,7 @@ sub cwd {
 }
 
 
-=head2 mock_default_cwd($dir)
+=head2 mock_default_cwd( $dir )
 
 default implementation for cwd. this method sholud be used in overridden method.
 
@@ -552,7 +552,7 @@ sub restart {
     return $self->mock_default_restart($where);
 }
 
-=head2 mock_default_restart(  $where )
+=head2 mock_default_restart( $where )
 
 default implementation for restart. this method sholud be used in overridden method.
 
@@ -563,7 +563,7 @@ sub mock_default_restart {
     return 1;
 }
 
-=head2 rmdir($dirname, $recursive_bool)
+=head2 rmdir( $dirname, $recursive_bool )
 
 rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively removed.
 this methos is allowed to be overridden.
@@ -641,7 +641,7 @@ sub mock_default_mkdir {
     }
 }
 
-=head2 alloc($size, [$record_size])
+=head2 alloc( $size, [$record_size] )
 
 alloc. 
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -669,7 +669,7 @@ sub mock_default_alloc {
     return 1;
 }
 
-=head2 ls( $dir )
+=head2 ls( [$dir] )
 
 list file(s) in server directory.
 this methos is allowed to be overridden.
@@ -691,7 +691,7 @@ sub ls {
     return \@result;
 }
 
-=head2 mock_default_ls($dir)
+=head2 mock_default_ls( [$dir] )
 
 default implementation for ls. this method sholud be used in overridden method.
 
@@ -708,7 +708,7 @@ sub mock_default_ls {
     return \@result;
 }
 
-=head2 dir($dir)
+=head2 dir( [$dir] )
 
 list file(s) with detail information(ex. filesize) in server directory.
 this methos is allowed to be overridden.
@@ -727,7 +727,7 @@ sub dir {
     return \@dir;
 }
 
-=head2 mock_default_dir($dir)
+=head2 mock_default_dir( [$dir] )
 
 default implementation for dir. this method sholud be used in overridden method.
 
@@ -743,7 +743,7 @@ sub mock_default_dir {
     return \@dir;
 }
 
-=head2 get($remote_file, [$local_file])
+=head2 get( $remote_file, [$local_file] )
 
 get file from mock FTP server
 this methos is allowed to be overridden.
@@ -760,7 +760,7 @@ sub get {
     return $self->mock_default_get($remote_file, $local_file);
 }
 
-=head2 mock_default_get($remote_file, [$local_file])
+=head2 mock_default_get( $remote_file, [$local_file] )
 
 default implementation for get. this method sholud be used in overridden method.
 
@@ -779,7 +779,7 @@ sub mock_default_get {
 }
 
 
-=head2 put($local_file, [$remote_file])
+=head2 put( $local_file, [$remote_file] )
 
 put a file to mock FTP server
 this methos is allowed to be overridden.
@@ -796,7 +796,7 @@ sub put {
     return $self->mock_default_put($local_file, $remote_file);
 }
 
-=head2 mock_default_put($local_file, [$remote_file])
+=head2 mock_default_put( $local_file, [$remote_file] )
 
 default implementation for put. this method sholud be used in overridden method.
 
@@ -814,7 +814,7 @@ sub mock_default_put {
     return $remote_file;
 }
 
-=head2 put_unique($local_file, [$remote_file])
+=head2 put_unique( $local_file, [$remote_file] )
 
 same as put() but if same file exists in server. rename to unique filename
 (in this module, simply add suffix .1(.2, .3...). and suffix is limited to 1024)
@@ -845,7 +845,7 @@ sub _unique_new_name {
     return $newfile;
 }
 
-=head2 mock_default_put_unique($local_file, [$remote_file])
+=head2 mock_default_put_unique( $local_file, [$remote_file] )
 
 default implementation for put_unique. this method sholud be used in overridden method.
 
@@ -866,7 +866,7 @@ sub mock_default_put_unique {
 }
 
 
-=head2 append($local_file, [$remote_file])
+=head2 append( $local_file, [$remote_file] )
 
 put a file to mock FTP server. if file already exists, append file contents in server file.
 this methos is allowed to be overridden.
@@ -883,7 +883,7 @@ sub append {
     return $self->mock_default_append($local_file, $remote_file);
 }
 
-=head2 mock_default_append($local_file, [$remote_file])
+=head2 mock_default_append( $local_file, [$remote_file] )
 
 default implementation for append. this method sholud be used in overridden method.
 
@@ -930,7 +930,7 @@ sub mock_default_unique_name {
     return $self->{mock_unique_name};
 }
 
-=head2 mdtm($file)
+=head2 mdtm( $file )
 
 returns file modification time in remote (mock) server. but currently always return 1
 this methos is allowed to be overridden.
@@ -958,7 +958,7 @@ sub mock_default_mdtm {
     return 1;
 }
 
-=head2 size($file)
+=head2 size( $file )
 
 returns filesize in remote (mock) server. but currently always return 1
 this methos is allowed to be overridden.
@@ -975,7 +975,7 @@ sub size {
     return $self->mock_default_size($filename);
 }
 
-=head2 mock_default_size($file)
+=head2 mock_default_size( $file )
 
 default implementation for size. this method sholud be used in overridden method.
 
@@ -987,7 +987,7 @@ sub mock_default_size {
     return 1;
 }
 
-=head2 supported($cmd)
+=head2 supported( $cmd )
 
 supported. 
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1004,7 +1004,7 @@ sub supported {
     return $self->mock_default_supported($cmd);
 }
 
-=head2 mock_default_supported($cmd)
+=head2 mock_default_supported( $cmd )
 
 default implementation for supported. this method sholud be used in overridden method.
 
@@ -1016,7 +1016,7 @@ sub mock_default_supported {
 }
 
 
-=head2 hash([$filehandle_glob_ref], [$bytes_per_hash_mark])
+=head2 hash( [$filehandle_glob_ref], [$bytes_per_hash_mark] )
 
 hash.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1033,7 +1033,7 @@ sub hash {
     return $self->mock_default_hash($filehandle_glob_ref, $bytes_per_hash_mark);
 }
 
-=head2 mock_default_hash([$filehandle_glob_ref], [$bytes_per_hash_mark])
+=head2 mock_default_hash( [$filehandle_glob_ref], [$bytes_per_hash_mark] )
 
 default implementation for hash. this method sholud be used in overridden method.
 
@@ -1073,7 +1073,7 @@ sub mock_default_feature {
     return ($cmd);
 }
 
-=head2 nlst([$dir])
+=head2 nlst( [$dir] )
 
 nlst.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1090,7 +1090,7 @@ sub nlst {
     return $self->mock_default_nlst($dir);
 }
 
-=head2 mock_default_nlst([$dir])
+=head2 mock_default_nlst( [$dir] )
 
 default implementation for nlst. this method sholud be used in overridden method.
 
@@ -1101,7 +1101,7 @@ sub mock_default_nlst {
     return 1;
 }
 
-=head2 list([$dir])
+=head2 list( [$dir] )
 
 list.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1118,7 +1118,7 @@ sub list {
     return $self->mock_default_list($dir);
 }
 
-=head2 mock_default_list([$dir])
+=head2 mock_default_list( [$dir] )
 
 default implementation for list. this method sholud be used in overridden method.
 
@@ -1129,7 +1129,7 @@ sub mock_default_list {
     return 1;
 }
 
-=head2 retr($file)
+=head2 retr( $file )
 
 retr.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1157,7 +1157,7 @@ sub mock_default_retr {
     return 1;
 }
 
-=head2 stor($file)
+=head2 stor( $file )
 
 stor.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1174,7 +1174,7 @@ sub stor {
     return $self->mock_default_stor($file);
 }
 
-=head2 mock_default_stor($file)
+=head2 mock_default_stor( $file )
 
 default implementation for stor. this method sholud be used in overridden method.
 
@@ -1185,7 +1185,7 @@ sub mock_default_stor {
     return 1;
 }
 
-=head2 stou($file)
+=head2 stou( $file )
 
 stou. currently do_nothing.
 
@@ -1201,7 +1201,7 @@ sub stou {
     return $self->mock_default_stou($file);
 }
 
-=head2 mock_default_stou($file)
+=head2 mock_default_stou( $file )
 
 default implementation for stor. this method sholud be used in overridden method.
 
@@ -1212,7 +1212,7 @@ sub mock_default_stou {
     return 1;
 }
 
-=head2 appe($file)
+=head2 appe( $file )
 
 appe.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1229,7 +1229,7 @@ sub appe {
     return $self->mock_default_appe($file);
 }
 
-=head2 mock_default_appe($file)
+=head2 mock_default_appe( $file )
 
 default implementation for appe. this method sholud be used in overridden method.
 
@@ -1240,7 +1240,7 @@ sub mock_default_appe {
     return 1;
 }
 
-=head2 port($port_no)
+=head2 port( $port_no )
 
 specify data connection to port-mode.
 
@@ -1261,7 +1261,7 @@ sub port {
     return $self->mock_default_port($port_no);
 }
 
-=head2 mock_default_port($port_no)
+=head2 mock_default_port( $port_no )
 
 default implementation for port. this method sholud be used in overridden method.
 
@@ -1448,7 +1448,7 @@ sub mock_default_quit {
 }
 
 
-=head2 quot($cmd, @args)
+=head2 quot( $cmd, @args )
 
 quot.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1465,7 +1465,7 @@ sub quot {
     return $self->mock_default_quot();
 }
 
-=head2 mock_default_quot($cmd, @args)
+=head2 mock_default_quot( $cmd, @args )
 
 default implementation for quot. this method sholud be used in overridden method.
 
