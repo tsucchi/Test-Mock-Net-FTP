@@ -601,6 +601,7 @@ default implementation for dir. this method sholud be used in overridden method.
 sub mock_default_dir {
     my ($self, $dir) = @_;
     my $target_dir = $self->_relative_remote($dir);
+    local $ENV{LC_ALL} = "C";
     my @dir = split(/\n/, `ls -l $target_dir`);
 
     return @dir if ( wantarray() );
