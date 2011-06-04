@@ -40,4 +40,4 @@ xt/perlcritic.t
 xt/perlcriticrc
 xt/pod.t
 xt/pod_coverage.t
-xt/synopsys.t
+xt/synopsis.t
