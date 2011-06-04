@@ -568,12 +568,20 @@ default implementation for ls. this method sholud be used in overridden method.
 sub mock_default_ls {
     my ($self, $dir) = @_;
 
-    my $target_dir = $self->_relative_remote($dir);
-    my @ls = split(/\n/, `ls $target_dir`);
+    my @ls = $self->_list_files($dir);
     my @result =  (defined $dir)? map{ catfile($dir, $_) } @ls : @ls;
 
     return @result if ( wantarray() );
     return \@result;
+}
+
+sub _list_files {
+    my ($self, $dir) = @_;
+    my $target_dir = $self->_relative_remote($dir);
+    opendir my $dh, $target_dir or die $!;
+    my @files = grep { $_ !~ /^\.?\.$/ } readdir($dh);
+    closedir $dh;
+    return @files;
 }
 
 =head2 dir( [$dir] )
