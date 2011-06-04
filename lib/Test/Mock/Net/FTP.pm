@@ -602,7 +602,6 @@ sub mock_default_dir {
     my ($self, $dir) = @_;
     my $target_dir = $self->_relative_remote($dir);
     my @dir = split(/\n/, `ls -l $target_dir`);
-    shift @dir if ( $dir[0] !~ /^[-rxwtTd]{10}/ ); #remove like "total xx"
 
     return @dir if ( wantarray() );
     return \@dir;
