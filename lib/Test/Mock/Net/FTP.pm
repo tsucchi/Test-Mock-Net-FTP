@@ -49,7 +49,25 @@ Test::Mock::Net::FTP - Mock Object for Net::FTP
 
 =head1 DESCRIPTION
 
-Test::Mock::Net::FTP is Mock Object for Net::FTP. This module behave like FTP servers, but only use local filesystem.(not using socket).
+Test::Mock::Net::FTP is Mock Object for Net::FTP. This module behave like FTP server, but only use local filesystem.(not using socket).
+
+=head1 NOTICE
+
+=over 4
+
+=item
+This module is implemented all Net::FTP's methods, but some methods are 'do nothing' currently. These methods behavior may be changed in future release.
+
+=item
+This module works in only Unix-like systems(does not work in MS-Windows).
+
+=item
+Some errors are not reproduced in this module.
+
+=item
+If you don't like default implementation of methods in this module, you can use override (or RT to me :-)
+
+=back
 
 =cut
 
