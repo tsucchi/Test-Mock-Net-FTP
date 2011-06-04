@@ -1136,32 +1136,31 @@ sub mock_default_close {
     return 1;
 }
 
-
-
-sub _relative_remote {
+sub _mock_abs2rel {
     my ($self, $path) = @_;
 
     if (defined $path && $path =~ /^$self->{mock_server_root}/ ) { #absolute path
         $path =~ s/^$self->{mock_server_root}//;
     }
+    return $path;
+}
+
+sub _relative_remote {
+    my ($self, $path) = @_;
+
+    $path = $self->_mock_abs2rel($path);
 
     return $self->mock_pwd if !defined $path;
     return catdir($self->mock_pwd, $path);
 }
 
 
-sub _remote_dir_for_file {
-    my ($self, $remote_file) = @_;
-
-    my $remote_dir = dirname($remote_file) eq curdir() ? $self->{mock_cwd} : dirname($remote_file) ;
-    $remote_dir =~ s/^$self->{mock_server_root}// if ( $remote_file =~ /^$self->{mock_server_root}/ );
-    return $remote_dir;
-}
-
 sub _abs_remote {
     my ($self, $remote_path) = @_;
 
-    my $remote_dir = $self->_remote_dir_for_file($remote_path);
+    my $remote_dir = dirname($remote_path) eq curdir() ? $self->{mock_cwd} : dirname($remote_path) ;
+    $remote_dir = $self->_mock_abs2rel($remote_dir);
+
     return catfile($self->{mock_physical_root}, $remote_dir, basename($remote_path))
 }
 
