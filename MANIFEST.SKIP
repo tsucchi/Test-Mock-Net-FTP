@@ -7,3 +7,4 @@
 ^.gitignore$
 ^TODO$
 ^a.pl$
+^cover_db/
