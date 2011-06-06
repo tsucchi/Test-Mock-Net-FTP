@@ -597,7 +597,7 @@ sub _list_files {
     my ($self, $dir) = @_;
     my $target_dir = $self->_relative_remote($dir);
     opendir my $dh, $target_dir or die $!;
-    my @files = grep { $_ !~ /^\.?\.$/ } readdir($dh);
+    my @files = sort grep { $_ !~ /^\.?\.$/ } readdir($dh);
     closedir $dh;
     return @files;
 }
