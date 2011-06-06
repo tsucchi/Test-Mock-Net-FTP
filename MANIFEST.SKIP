@@ -9,3 +9,4 @@
 ^a.pl$
 ^cover_db/
 ^.shipit$
+^MYMETA.yml$
