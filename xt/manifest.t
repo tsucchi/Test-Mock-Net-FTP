@@ -4,4 +4,4 @@ use warnings;
 
 use Test::CheckManifest;
 
-ok_manifest();
+ok_manifest({ filter => [qr/\AMYMETA\./ms] });
