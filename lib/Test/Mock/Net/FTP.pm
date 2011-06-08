@@ -10,7 +10,7 @@ use Carp;
 use File::Path qw(make_path remove_tree);
 use File::Slurp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
