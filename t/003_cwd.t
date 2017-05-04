@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use Test::More;
 use Test::Mock::Net::FTP;
+use lib '.';
 use t::Util;
 use strict;
 use warnings;

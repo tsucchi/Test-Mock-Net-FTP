@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 use File::Spec::Functions qw(catfile catdir rootdir);
+use lib '.';
 use t::Util;
 use Test::Mock::Net::FTP;
 use Cwd;
