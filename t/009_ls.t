@@ -7,6 +7,7 @@ use File::Copy;
 use File::Spec::Functions qw(catfile);
 
 use Test::More;
+use lib '.';
 use t::Util;
 use Test::Mock::Net::FTP;
 

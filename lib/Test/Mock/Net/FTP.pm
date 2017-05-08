@@ -400,6 +400,11 @@ sub mock_default_cwd {
         $dirs = "";
     }
 
+    # if an absolute path, start at root
+    elsif ( $dirs =~ m|^/| ) {
+        $self->{mock_cwd} = rootdir();
+    }
+
     my $backup_cwd = $self->_mock_cwd;
     for my $dir ( splitdir($dirs) ) {
         $self->_mock_cwd_each($dir);

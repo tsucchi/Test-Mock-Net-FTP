@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use Test::More;
 use Test::Mock::Net::FTP;
+use lib '.';
 use t::Util;
 use strict;
 use warnings;
@@ -100,16 +101,38 @@ subtest 'chdir to up another dir', sub {
     done_testing();
 };
 
-subtest 'using absolute path', sub {
-    my $ftp = prepare_ftp();
+subtest 'absolute path', sub {
 
-    ok( $ftp->cwd('/ftproot/dir1/dir2') );
-    is( $ftp->pwd, '/ftproot/dir1/dir2' );
-    is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir2' );
+    subtest 'starting at root' => sub {
+        my $ftp = prepare_ftp();
 
-    $ftp->quit();
-    done_testing();
+        ok( $ftp->cwd('/ftproot/dir1/dir2') );
+        is( $ftp->pwd, '/ftproot/dir1/dir2' );
+        is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir2' );
+
+        $ftp->quit();
+        done_testing();
+    };
+
+
+    subtest 'starting below root', sub {
+
+        my $ftp = prepare_ftp();
+
+        ok( $ftp->cwd('dir1/dir2') );
+        is( $ftp->pwd, '/ftproot/dir1/dir2' );
+
+        ok( $ftp->cwd('/ftproot/dir1/dir2') );
+        is( $ftp->pwd, '/ftproot/dir1/dir2' );
+
+        is( abs2rel($ftp->mock_pwd), 'tmp/ftpserver/dir1/dir2' );
+
+        $ftp->quit();
+        done_testing();
+    };
+
 };
+
 
 
 subtest 'invalid path', sub {

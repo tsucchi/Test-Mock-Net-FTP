@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use lib '.';
 use t::Util;
 use Test::Mock::Net::FTP;
 use File::Spec::Functions qw(catfile);

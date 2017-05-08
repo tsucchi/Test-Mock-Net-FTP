@@ -7,6 +7,7 @@ use File::Path qw(remove_tree make_path);
 use File::Copy;
 use File::Spec::Functions qw(catfile catdir);
 use Cwd qw(chdir getcwd);
+use lib '.';
 use t::Util;
 use Test::Mock::Net::FTP qw(intercept);
 use Net::FTP;
