@@ -71,6 +71,7 @@
    "version" : "0.02",
    "x_contributors" : [
       "tsucchi <takuya.tsuchida at gmail.com>",
+      "Diab Jerius <djerius@cfa.harvard.edu>",
       "Takuya Tsuchida <tsucchi@cpan.org>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27300"
