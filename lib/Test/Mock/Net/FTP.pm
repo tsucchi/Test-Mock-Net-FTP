@@ -12,6 +12,10 @@ use File::Slurp;
 
 our $VERSION = '0.02';
 
+# stopwords for Spellunker
+
+=for stopwords pasv ascii alloc cwd cdup pwd rmdir dir mkdir ls filesize mdtm nlst retr stor stou appe login quot
+
 =head1 NAME
 
 Test::Mock::Net::FTP - Mock Object for Net::FTP
@@ -78,7 +82,7 @@ my $cwd_when_prepared;
 
 =cut
 
-=head2 mock_prepare( %params )
+=head2 C<mock_prepare( %params )>
 
 prepare FTP server in your local filesystem.
 
@@ -90,7 +94,7 @@ sub mock_prepare {
     $cwd_when_prepared = getcwd();
 }
 
-=head2 mock_pwd()
+=head2 C<mock_pwd()>
 
 mock's current directory
 
@@ -101,7 +105,7 @@ sub mock_pwd {
     return catdir($self->mock_physical_root, $self->_mock_cwd);
 }
 
-=head2 mock_physical_root()
+=head2 C<mock_physical_root()>
 
 mock's physical root directory
 
@@ -112,7 +116,7 @@ sub mock_physical_root {
     return $self->{mock_physical_root};
 }
 
-=head2 mock_connection_mode()
+=head2 C<mock_connection_mode()>
 
 return current connection mode (port or pasv)
 
@@ -124,7 +128,7 @@ sub mock_connection_mode {
     return $self->{mock_connection_mode};
 }
 
-=head2 mock_port_no()
+=head2 C<mock_port_no()>
 
 return current port no
 
@@ -136,7 +140,7 @@ sub mock_port_no {
     return $self->{mock_port_no};
 }
 
-=head2 mock_transfer_mode()
+=head2 C<mock_transfer_mode()>
 
 return current transfer mode(ascii or binary)
 
@@ -148,7 +152,7 @@ sub mock_transfer_mode {
     return $self->{mock_transfer_mode};
 }
 
-=head2 mock_command_history()
+=head2 C<mock_command_history()>
 
 return command history
 
@@ -172,7 +176,7 @@ sub _push_mock_command_history {
     push @{ $self->{mock_command_history} }, [$method_name, @args];
 }
 
-=head2 mock_clear_command_history()
+=head2 C<mock_clear_command_history()>
 
 clear command history
 
@@ -185,7 +189,7 @@ sub mock_clear_command_history {
 }
 
 
-=head2 new( $host, %options )
+=head2 C<new( $host, %options )>
 
 create new instance
 
@@ -219,7 +223,7 @@ sub _connection_mode_and_port_no {
     return ($connection_mode, $port_no);
 }
 
-=head2 login( $user, $password )
+=head2 C<login( $user, $password )>
 
 login mock FTP server. this method IS NOT allowed to be overridden.
 
@@ -255,7 +259,7 @@ sub _mock_login_auth {
     return $server_password eq $pass;
 }
 
-=head2 authorize( [$auth, [$resp]] )
+=head2 C<authorize( [$auth, [$resp]] )>
 
 authorize.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -263,9 +267,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_authorize( [$auth, [$resp]] )
+=head2 C<mock_default_authorize( [$auth, [$resp]] )>
 
-default implementation for authorize. this method sholud be used in overridden method.
+default implementation for authorize. this method should be used in overridden method.
 
 =cut
 
@@ -274,7 +278,7 @@ sub mock_default_authorize {
     return 1;
 }
 
-=head2 site( @args )
+=head2 C<site( @args )>
 
 execute SITE command. 
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -282,9 +286,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_site( @args )
+=head2 C<mock_default_site( @args )>
 
-default implementation for site. this method sholud be used in overridden method.
+default implementation for site. this method should be used in overridden method.
 
 =cut
 
@@ -293,18 +297,18 @@ sub mock_default_site {
     return 1;
 }
 
-=head2 ascii()
+=head2 C<ascii()>
 
 enter ascii mode.
 mock_transfer_mode() returns 'ascii'.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_ascii()
+=head2 C<mock_default_ascii()>
 
-default implementation for ascii. this method sholud be used in overridden method.
+default implementation for ascii. this method should be used in overridden method.
 
 =cut
 
@@ -313,18 +317,18 @@ sub mock_default_ascii {
     $self->{mock_transfer_mode} = 'ascii';
 }
 
-=head2 binary()
+=head2 C<binary()>
 
 enter binary mode.
 mock_transfer_mode() returns 'binary'.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_binary()
+=head2 C<mock_default_binary()>
 
-default implementation for binary. this method sholud be used in overridden method.
+default implementation for binary. this method should be used in overridden method.
 
 =cut
 
@@ -333,17 +337,17 @@ sub mock_default_binary {
     $self->{mock_transfer_mode} = 'binary';
 }
 
-=head2 rename($oldname, $newname)
+=head2 C<rename($oldname, $newname)>
 
 rename remote file.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_rename($oldname, $newname)
+=head2 C<mock_default_rename($oldname, $newname)>
 
-default implementation for rename. this method sholud be used in overridden method.
+default implementation for rename. this method should be used in overridden method.
 
 =cut
 
@@ -355,17 +359,17 @@ sub mock_default_rename {
     }
 }
 
-=head2 delete( $filename )
+=head2 C<delete( $filename )>
 
 delete remote file.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_delete( $filename )
+=head2 C<mock_default_delete( $filename )>
 
-default implementation for delete. this method sholud be used in overridden method.
+default implementation for delete. this method should be used in overridden method.
 
 =cut
 
@@ -378,17 +382,17 @@ sub mock_default_delete {
     }
 }
 
-=head2 cwd( $dir )
+=head2 C<cwd( $dir )>
 
 change (mock) server current directory
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_cwd( $dir )
+=head2 C<mock_default_cwd( $dir )>
 
-default implementation for cwd. this method sholud be used in overridden method.
+default implementation for cwd. this method should be used in overridden method.
 
 =cut
 
@@ -413,17 +417,17 @@ sub mock_default_cwd {
     return $self->_mock_check_pwd($backup_cwd);
 }
 
-=head2 cdup()
+=head2 C<cdup()>
 
 change (mock) server directory to parent
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_cdup()
+=head2 C<mock_default_cdup()>
 
-default implementation for cdup. this method sholud be used in overridden method.
+default implementation for cdup. this method should be used in overridden method.
 
 =cut
 
@@ -434,17 +438,17 @@ sub mock_default_cdup {
     return $self->_mock_check_pwd($backup_cwd);
 }
 
-=head2 pwd()
+=head2 C<pwd()>
 
 return (mock) server current directory
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_pwd()
+=head2 C<mock_default_pwd()>
 
-default implementation for pwd. this method sholud be used in overridden method.
+default implementation for pwd. this method should be used in overridden method.
 
 =cut 
 
@@ -476,17 +480,17 @@ sub _mock_check_pwd {
     return 1;
 }
 
-=head2 restart( $where )
+=head2 C<restart( $where )>
 
 restart. currently do_nothing
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_restart( $where )
+=head2 C<mock_default_restart( $where )>
 
-default implementation for restart. this method sholud be used in overridden method.
+default implementation for restart. this method should be used in overridden method.
 
 =cut
 
@@ -495,17 +499,17 @@ sub mock_default_restart {
     return 1;
 }
 
-=head2 rmdir( $dirname, $recursive_bool )
+=head2 C<rmdir( $dirname, $recursive_bool )>
 
 rmdir to remove (mock) server. when $recursive_bool is true, dir is recursively removed.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_rmdir( $dirname, $recursive_bool )
+=head2 C<mock_default_rmdir( $dirname, $recursive_bool )>
 
-default implementation for rmdir. this method sholud be used in overridden method.
+default implementation for rmdir. this method should be used in overridden method.
 
 =cut
 
@@ -525,17 +529,17 @@ sub mock_default_rmdir {
     }
 }
 
-=head2 mkdir( $dirname, $recursive_bool )
+=head2 C<mkdir( $dirname, $recursive_bool )>
 
 mkdir to remove (mock) server. when $recursive_bool is true, dir is recursively create.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_mkdir( $dirname, $recursive_bool )
+=head2 C<mock_default_mkdir( $dirname, $recursive_bool )>
 
-default implementation for mkdir. this method sholud be used in overridden method.
+default implementation for mkdir. this method should be used in overridden method.
 
 =cut
 
@@ -555,7 +559,7 @@ sub mock_default_mkdir {
     }
 }
 
-=head2 alloc( $size, [$record_size] )
+=head2 C<alloc( $size, [$record_size] )>
 
 alloc. 
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -563,9 +567,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_alloc( $size, [$record_size] )
+=head2 C<mock_default_alloc( $size, [$record_size] )>
 
-default implementation for alloc. this method sholud be used in overridden method.
+default implementation for alloc. this method should be used in overridden method.
 
 =cut
 
@@ -574,17 +578,17 @@ sub mock_default_alloc {
     return 1;
 }
 
-=head2 ls( [$dir] )
+=head2 C<ls( [$dir] )>
 
 list file(s) in server directory.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_ls( [$dir] )
+=head2 C<mock_default_ls( [$dir] )>
 
-default implementation for ls. this method sholud be used in overridden method.
+default implementation for ls. this method should be used in overridden method.
 
 =cut
 
@@ -607,17 +611,17 @@ sub _list_files {
     return @files;
 }
 
-=head2 dir( [$dir] )
+=head2 C<dir( [$dir] )>
 
 list file(s) with detail information(ex. filesize) in server directory.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_dir( [$dir] )
+=head2 C<mock_default_dir( [$dir] )>
 
-default implementation for dir. this method sholud be used in overridden method.
+default implementation for dir. this method should be used in overridden method.
 
 =cut 
 
@@ -631,17 +635,17 @@ sub mock_default_dir {
     return \@dir;
 }
 
-=head2 get( $remote_file, [$local_file] )
+=head2 C<get( $remote_file, [$local_file] )>
 
 get file from mock FTP server
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
 =head2 mock_default_get( $remote_file, [$local_file] )
 
-default implementation for get. this method sholud be used in overridden method.
+default implementation for get. this method should be used in overridden method.
 
 =cut
 
@@ -658,17 +662,17 @@ sub mock_default_get {
 }
 
 
-=head2 put( $local_file, [$remote_file] )
+=head2 C<put( $local_file, [$remote_file] )>
 
 put a file to mock FTP server
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_put( $local_file, [$remote_file] )
+=head2 C<mock_default_put( $local_file, [$remote_file] )>
 
-default implementation for put. this method sholud be used in overridden method.
+default implementation for put. this method should be used in overridden method.
 
 =cut
 
@@ -684,11 +688,11 @@ sub mock_default_put {
     return $remote_file;
 }
 
-=head2 put_unique( $local_file, [$remote_file] )
+=head2 C<put_unique( $local_file, [$remote_file] )>
 
 same as put() but if same file exists in server. rename to unique filename
 (in this module, simply add suffix .1(.2, .3...). and suffix is limited to 1024)
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
@@ -706,9 +710,9 @@ sub _unique_new_name {
     return $newfile;
 }
 
-=head2 mock_default_put_unique( $local_file, [$remote_file] )
+=head2 C<mock_default_put_unique( $local_file, [$remote_file] )>
 
-default implementation for put_unique. this method sholud be used in overridden method.
+default implementation for put_unique. this method should be used in overridden method.
 
 =cut
 
@@ -727,17 +731,17 @@ sub mock_default_put_unique {
 }
 
 
-=head2 append( $local_file, [$remote_file] )
+=head2 C<append( $local_file, [$remote_file] )>
 
 put a file to mock FTP server. if file already exists, append file contents in server file.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_append( $local_file, [$remote_file] )
+=head2 C<mock_default_append( $local_file, [$remote_file] )>
 
-default implementation for append. this method sholud be used in overridden method.
+default implementation for append. this method should be used in overridden method.
 
 =cut
 
@@ -753,17 +757,17 @@ sub mock_default_append {
     write_file( $self->_abs_remote($remote_file), { append => 1 }, $local_contents);
 }
 
-=head2 unique_name()
+=head2 C<unique_name()>
 
 return unique filename when put_unique() called.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_unique_name()
+=head2 C<mock_default_unique_name()>
 
-default implementation for unique_name. this method sholud be used in overridden method.
+default implementation for unique_name. this method should be used in overridden method.
 
 =cut
 
@@ -773,16 +777,16 @@ sub mock_default_unique_name {
     return $self->{mock_unique_name};
 }
 
-=head2 mdtm( $file )
+=head2 C<mdtm( $file )>
 
 returns file modification time in remote (mock) server.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
-=head2 mock_default_mdtm()
+=head2 C<mock_default_mdtm()>
 
-default implementation for mdtm. this method sholud be used in overridden method.
+default implementation for mdtm. this method should be used in overridden method.
 
 =cut
 
@@ -792,17 +796,17 @@ sub mock_default_mdtm {
     return $mdtm;
 }
 
-=head2 size( $file )
+=head2 C<size( $file )>
 
 returns filesize in remote (mock) server.
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_size( $file )
+=head2 C<mock_default_size( $file )>
 
-default implementation for size. this method sholud be used in overridden method.
+default implementation for size. this method should be used in overridden method.
 
 =cut
 
@@ -812,7 +816,7 @@ sub mock_default_size {
     return $size;
 }
 
-=head2 supported( $cmd )
+=head2 C<supported( $cmd )>
 
 supported. 
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -820,9 +824,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_supported( $cmd )
+=head2 C<mock_default_supported( $cmd )>
 
-default implementation for supported. this method sholud be used in overridden method.
+default implementation for supported. this method should be used in overridden method.
 
 =cut
 
@@ -832,7 +836,7 @@ sub mock_default_supported {
 }
 
 
-=head2 hash( [$filehandle_glob_ref], [$bytes_per_hash_mark] )
+=head2 C<hash( [$filehandle_glob_ref], [$bytes_per_hash_mark] )>
 
 hash.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -840,9 +844,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_hash( [$filehandle_glob_ref], [$bytes_per_hash_mark] )
+=head2 C<mock_default_hash( [$filehandle_glob_ref], [$bytes_per_hash_mark] )>
 
-default implementation for hash. this method sholud be used in overridden method.
+default implementation for hash. this method should be used in overridden method.
 
 =cut
 
@@ -852,17 +856,17 @@ sub mock_default_hash {
 }
 
 
-=head2 feature( $cmd )
+=head2 C<feature( $cmd )>
 
-reature. currently returns list of $cmd.
+feature. currently returns list of $cmd.
 this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_feature( $cmd )
+=head2 C<mock_default_feature( $cmd )>
 
-default implementation for feature. this method sholud be used in overridden method.
+default implementation for feature. this method should be used in overridden method.
 
 =cut
 
@@ -871,16 +875,16 @@ sub mock_default_feature {
     return ($cmd);
 }
 
-=head2 nlst( [$dir] )
+=head2 C<nlst( [$dir] )>
 
 nlst.
 default implementation is 'do nothing'. this method is allowed to be overridden.
 
 =cut
 
-=head2 mock_default_nlst( [$dir] )
+=head2 C<mock_default_nlst( [$dir] )>
 
-default implementation for nlst. this method sholud be used in overridden method.
+default implementation for nlst. this method should be used in overridden method.
 
 =cut
 
@@ -889,7 +893,7 @@ sub mock_default_nlst {
     return 1;
 }
 
-=head2 list( [$dir] )
+=head2 C<list( [$dir] )>
 
 list.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -897,9 +901,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_list( [$dir] )
+=head2 C<mock_default_list( [$dir] )>
 
-default implementation for list. this method sholud be used in overridden method.
+default implementation for list. this method should be used in overridden method.
 
 =cut
 
@@ -908,7 +912,7 @@ sub mock_default_list {
     return 1;
 }
 
-=head2 retr( $file )
+=head2 C<retr( $file )>
 
 retr.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -916,9 +920,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_retr($file)
+=head2 C<mock_default_retr($file)>
 
-default implementation for retr. this method sholud be used in overridden method.
+default implementation for retr. this method should be used in overridden method.
 
 =cut
 
@@ -927,7 +931,7 @@ sub mock_default_retr {
     return 1;
 }
 
-=head2 stor( $file )
+=head2 C<stor( $file )>
 
 stor.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -935,9 +939,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_stor( $file )
+=head2 C<mock_default_stor( $file )>
 
-default implementation for stor. this method sholud be used in overridden method.
+default implementation for stor. this method should be used in overridden method.
 
 =cut
 
@@ -946,16 +950,16 @@ sub mock_default_stor {
     return 1;
 }
 
-=head2 stou( $file )
+=head2 C<stou( $file )>
 
 stou. currently do_nothing.
 
 =cut
 
 
-=head2 mock_default_stou( $file )
+=head2 C<mock_default_stou( $file )>
 
-default implementation for stor. this method sholud be used in overridden method.
+default implementation for stor. this method should be used in overridden method.
 
 =cut
 
@@ -964,7 +968,7 @@ sub mock_default_stou {
     return 1;
 }
 
-=head2 appe( $file )
+=head2 C<appe( $file )>
 
 appe.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -972,9 +976,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_appe( $file )
+=head2 C<mock_default_appe( $file )>
 
-default implementation for appe. this method sholud be used in overridden method.
+default implementation for appe. this method should be used in overridden method.
 
 =cut
 
@@ -983,21 +987,21 @@ sub mock_default_appe {
     return 1;
 }
 
-=head2 port( $port_no )
+=head2 C<port( $port_no )>
 
 specify data connection to port-mode.
 
 after called this method, mock_connection_mode() returns 'port' and 
 mock_port_no() returns specified $port_no.
 
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_port( $port_no )
+=head2 C<mock_default_port( $port_no )>
 
-default implementation for port. this method sholud be used in overridden method.
+default implementation for port. this method should be used in overridden method.
 
 =cut
 
@@ -1007,20 +1011,20 @@ sub mock_default_port {
     $self->{mock_port_no} = $port_no;
 }
 
-=head2 pasv()
+=head2 C<pasv()>
 
 specify data connection to passive-mode.
 after called this method, mock_connection_mode() returns 'pasv' and
 mock_port_no() returns ''
 
-this methos is allowed to be overridden.
+this method is allowed to be overridden.
 
 =cut
 
 
-=head2 mock_default_pasv()
+=head2 C<mock_default_pasv()>
 
-default implementation for pasv. this method sholud be used in overridden method.
+default implementation for pasv. this method should be used in overridden method.
 
 =cut
 
@@ -1030,7 +1034,7 @@ sub mock_default_pasv {
     $self->{mock_port_no} = '';
 }
 
-=head2 pasv_xfer( $src_file, $dest_server, [$dest_file] )
+=head2 C<pasv_xfer( $src_file, $dest_server, [$dest_file] )>
 
 pasv_xfer.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1038,9 +1042,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_pasv_xfer( $src_file, $dest_server, [$dest_file] )
+=head2 C<mock_default_pasv_xfer( $src_file, $dest_server, [$dest_file] )>
 
-default implementation for psv_xfer. this method sholud be used in overridden method.
+default implementation for psv_xfer. this method should be used in overridden method.
 
 =cut
 
@@ -1050,7 +1054,7 @@ sub mock_default_pasv_xfer {
 }
 
 
-=head2 pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )
+=head2 C<pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )>
 
 pasv_xfer_unique.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1058,9 +1062,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )
+=head2 C<mock_default_pasv_xfer_unique( $src_file, $dest_server, [$dest_file] )>
 
-default implementation for psv_xfer_unique. this method sholud be used in overridden method.
+default implementation for psv_xfer_unique. this method should be used in overridden method.
 
 =cut
 
@@ -1069,7 +1073,7 @@ sub mock_default_pasv_xfer_unique {
     return 1;
 }
 
-=head2 pasv_wait( $non_pasv_server )
+=head2 C<pasv_wait( $non_pasv_server )>
 
 pasv_wait.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1077,9 +1081,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_pasv_wait( $non_pasv_server )
+=head2 C<mock_default_pasv_wait( $non_pasv_server )>
 
-default implementation for pasv_wait. this method sholud be used in overridden method.
+default implementation for pasv_wait. this method should be used in overridden method.
 
 =cut
 
@@ -1089,7 +1093,7 @@ sub mock_default_pasv_wait {
 }
 
 
-=head2 abort()
+=head2 C<abort()>
 
 abort.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1097,9 +1101,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_abort()
+=head2 C<mock_default_abort()>
 
-default implementation for abort. this method sholud be used in overridden method.
+default implementation for abort. this method should be used in overridden method.
 
 =cut
 
@@ -1108,7 +1112,7 @@ sub mock_default_abort {
     return 1;
 }
 
-=head2 quit()
+=head2 C<quit()>
 
 quit.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1116,9 +1120,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_quit()
+=head2 C<mock_default_quit()>
 
-default implementation for quit. this method sholud be used in overridden method.
+default implementation for quit. this method should be used in overridden method.
 
 =cut
 
@@ -1128,7 +1132,7 @@ sub mock_default_quit {
 }
 
 
-=head2 quot( $cmd, @args )
+=head2 C<quot( $cmd, @args )>
 
 quot.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1136,9 +1140,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_quot( $cmd, @args )
+=head2 C<mock_default_quot( $cmd, @args )>
 
-default implementation for quot. this method sholud be used in overridden method.
+default implementation for quot. this method should be used in overridden method.
 
 =cut
 
@@ -1148,7 +1152,7 @@ sub mock_default_quot {
 }
 
 
-=head2 close()
+=head2 C<close()>
 
 close connection mock FTP server.
 default implementation is 'do nothing'. this method is allowed to be overridden.
@@ -1156,9 +1160,9 @@ default implementation is 'do nothing'. this method is allowed to be overridden.
 =cut
 
 
-=head2 mock_default_close()
+=head2 C<mock_default_close()>
 
-default implementation for close. this method sholud be used in overridden method.
+default implementation for close. this method should be used in overridden method.
 
 =cut
 
@@ -1205,7 +1209,7 @@ sub _abs_local {
     return catfile($local_dir, basename($local_path));
 }
 
-=head2 message()
+=head2 C<message()>
 
 return messages from mock FTP server
 this method is allowed to be overridden.
@@ -1222,9 +1226,9 @@ sub message {
     return $self->mock_default_message();
 }
 
-=head2 mock_default_message()
+=head2 C<mock_default_message()>
 
-default implementation for message. this method sholud be used in overridden method.
+default implementation for message. this method should be used in overridden method.
 
 =cut
 

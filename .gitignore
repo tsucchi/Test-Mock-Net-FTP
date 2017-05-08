@@ -1,2 +1,10 @@
 *~
 cover_db/
+/Test-Mock-Net-FTP-*
+/.build
+/_build_params
+/Build
+/Build.bat
+!Build/
+!META.json
+!LICENSE
