@@ -5,8 +5,7 @@ use Test::More;
 
 use File::Copy;
 use File::Spec::Functions qw(catfile);
-use FindBin;
-use lib $FindBin::Bin;
+use lib ( '.' );
 use t::Util;
 use Test::Mock::Net::FTP;
 use Cwd;
