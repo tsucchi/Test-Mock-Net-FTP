@@ -3,8 +3,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use FindBin;
-use lib $FindBin::Bin;
+use lib ( '.' );
 use t::Util;
 use Test::Mock::Net::FTP;
 use File::Spec::Functions qw(catfile);
